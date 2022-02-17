@@ -7,6 +7,7 @@ using AirDriVR;
 public class ShowVibration : MonoBehaviour
 {
     protected int[] VibratorIntensities = new int[16];
+    protected int[] VibratorMotionIntensities = new int[16];
     protected int[] VibratorAddiIntensities = new int[16];
     protected int[] VibratorFrequencies = new int[16];
     protected float[] VibratorAddiLifeSpans = new float[16];
@@ -25,6 +26,7 @@ public class ShowVibration : MonoBehaviour
     {
         VibratorIntensities = gameObject.GetComponent<VirtualHeadband>().VibratorIntensities;
         VibratorLifeSpans = gameObject.GetComponent<VirtualHeadband>().VibratorLifeSpans;
+        VibratorMotionIntensities = gameObject.GetComponent<VirtualHeadband>().VibratorMotionIntensities;
         VibratorAddiIntensities = gameObject.GetComponent<VirtualHeadband>().VibratorAdditionalIntensities;
         VibratorFrequencies = gameObject.GetComponent<VirtualHeadband>().VibratorFrequencies;
         VibratorAddiLifeSpans = gameObject.GetComponent<VirtualHeadband>().VibratorAddiLifeSpans;
@@ -43,9 +45,9 @@ public class ShowVibration : MonoBehaviour
         maxColor = Color.Lerp(Color.red, Color.red, ((float)VibratorFrequencies[0]) / 100.0f);
         for (int i = 0; i < 16; i++)
         {
-            if ((VibratorLifeSpans[i] > 0 || VibratorAddiLifeSpans[i] > 0) && (VibratorIntensities[i] + VibratorAddiIntensities[i])> 0 && VibratorIntensities[i] <= 100)
+            if ((VibratorIntensities[i] > 0 || VibratorLifeSpans[i] > 0 || VibratorAddiLifeSpans[i] > 0) && (VibratorIntensities[i] + VibratorMotionIntensities[i] + VibratorAddiIntensities[i])> 0 && VibratorIntensities[i] <= 100)
             {
-                MotorImages[i].color = Color.Lerp(Color.white, maxColor, ((float)VibratorIntensities[i] + VibratorAddiIntensities[i]) / 100.0f);
+                MotorImages[i].color = Color.Lerp(Color.white, maxColor, ((float)VibratorIntensities[i] + VibratorMotionIntensities[i] / 2 + VibratorAddiIntensities[i] / 2) / 120.0f);
             }
             else
             {

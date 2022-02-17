@@ -12,6 +12,8 @@ public class PatternGenerator : MonoBehaviour
     public bool intensityMappingEnable;
     // turn off then constant frequency
     public bool frequencyMappingEnable;
+    // turn on then always map velocity to tactile motion, remember to turn acc pattern to cue
+    public bool defaultTactileMotionEnable;
     public enum ParameterType
     {
         constant = 0,
@@ -38,7 +40,8 @@ public class PatternGenerator : MonoBehaviour
         front = 1,
         right = 2,
         back = 3,
-        left = 4
+        left = 4,
+        backCue = 5
     };
     private RegionType currentRegion = RegionType.none;
     private RegionType lastRegion = RegionType.none;
@@ -85,9 +88,12 @@ public class PatternGenerator : MonoBehaviour
 
     private VirtualHeadband virtualHeadband;
 
+    private float justBrakeTimer;
+
     private void Start()
     {
         motionTimer = 0.0f;
+        justBrakeTimer = 0.0f;
         checkAngles();
         Gforce = Vector3.zero;
         intensityMappingEnable = true;
@@ -98,6 +104,7 @@ public class PatternGenerator : MonoBehaviour
     void FixedUpdate()
     {
         motionTimer -= Time.fixedDeltaTime;
+        justBrakeTimer -= Time.fixedDeltaTime;
 
         speed = GetComponent<ACListener>().velocity;
 
@@ -135,11 +142,29 @@ public class PatternGenerator : MonoBehaviour
             motionInterval = 4.0f * duration;
         }
 
+        /* bad
+        if (defaultTactileMotionEnable && speed > 0.01f)
+        {
+            // duration fixed at 0.2s
+            // magnitude is mapped to ISOI
+            // ISOI range: 0.05~0.12s
+            if (motionTimer < 0)
+            {
+                motionTimer = motionInterval;
+                virtualHeadband.isMotion = true;
+                StartCoroutine(generateMotion(true, 0.0f, -180.0f, 0.0f));
+                StartCoroutine(generateMotion(false, 0.0f, 180.0f, 0.0f));
+            }
+           
+        }
+        */
+
         if (intensityMappingEnable)
         {
             if(GforceAngle <= decAngleRange && GforceAngle >= -decAngleRange && planarGforceMagnitude > 0.01f)
             {
                 // deceleration, front part
+                justBrakeTimer = 1.0f;
                 switch (DecelPatternType)
                 {
                     case PatternType.directionalCue:
@@ -258,23 +283,46 @@ public class PatternGenerator : MonoBehaviour
                         break;
 
                     case PatternType.tactileMotion_magToISOI:
-                        if (planarGforceMagnitude > GforceMinThreshold && motionTimer < 0)
+                        if(justBrakeTimer > 0.0f)
                         {
-                            currentRegion = RegionType.back;
-                            if (currentRegion != lastRegion)
+                            // just brake, use directional cue
+                            if (planarGforceMagnitude > GforceMinThreshold)
                             {
-                                StopAllCoroutines();
+                                currentRegion = RegionType.backCue;
+                                if (currentRegion != lastRegion)
+                                {
+                                    StopAllCoroutines();
+                                    virtualHeadband.setAllToZero();
+                                }
+                                virtualHeadband.isMotion = false;
+                                convertGforce(GforceAngle, planarGforceMagnitude * 2);
+                            }
+                            else
+                            {
                                 virtualHeadband.setAllToZero();
                             }
-                            // duration fixed at 0.2s
-                            // magnitude is mapped to ISOI
-                            // ISOI range: 0.05~0.12s
-                            if (motionTimer < 0)
+                        }
+                        else
+                        {
+                            // use tactile motion
+                            if (planarGforceMagnitude > GforceMinThreshold && motionTimer < 0)
                             {
-                                motionTimer = motionInterval;
-                                virtualHeadband.isMotion = true;
-                                StartCoroutine(generateMotion(true, 0.0f, -180.0f, 0.0f));
-                                StartCoroutine(generateMotion(false, 0.0f, 180.0f, 0.0f));
+                                currentRegion = RegionType.back;
+                                if (currentRegion != lastRegion)
+                                {
+                                    StopAllCoroutines();
+                                    virtualHeadband.setAllToZero();
+                                }
+                                // duration fixed at 0.2s
+                                // magnitude is mapped to ISOI
+                                // ISOI range: 0.05~0.12s
+                                if (motionTimer < 0)
+                                {
+                                    motionTimer = motionInterval;
+                                    virtualHeadband.isMotion = true;
+                                    StartCoroutine(generateMotion(true, 0.0f, -180.0f, 0.0f));
+                                    StartCoroutine(generateMotion(false, 0.0f, 180.0f, 0.0f));
+                                }
                             }
                         }
                         break;
@@ -509,7 +557,7 @@ public class PatternGenerator : MonoBehaviour
     private void setVibratorIntensity(float angleDiff, float G_mag, int VibratorIndex)
     {
         virtualHeadband.VibratorIntensities[VibratorIndex] = Mathf.FloorToInt(calculateIntensity(angleDiff, G_mag));
-        virtualHeadband.VibratorLifeSpans[VibratorIndex] = 1.0f;
+        // virtualHeadband.VibratorLifeSpans[VibratorIndex] = 1.0f;
     }
 
     private float calculateIntensity(float angleDiff, float G_mag)
@@ -579,11 +627,12 @@ public class PatternGenerator : MonoBehaviour
                 virtualHeadband.VibratorLifeSpans[i] = duration;
                 if (MotionPatternType == PatternType.tactileMotion_magToIntensity)
                 {
-                    virtualHeadband.VibratorIntensities[i] = Mathf.FloorToInt(calculateIntensity(0.0f, planarGforceMagnitude));
+                    virtualHeadband.VibratorMotionIntensities[i] = Mathf.FloorToInt(calculateIntensity(0.0f, planarGforceMagnitude));
                 }
                 else
                 {
-                    virtualHeadband.VibratorIntensities[i] = Mathf.FloorToInt(calculateIntensity(0.0f, speed / 3.0f / (speedMaxThreshold - speedMinThreshold)));
+                    // From 0 ~ 100
+                    virtualHeadband.VibratorMotionIntensities[i] = Mathf.FloorToInt(calculateIntensity(0.0f, speed / (speedMaxThreshold - speedMinThreshold)));
                 }
             }
         }

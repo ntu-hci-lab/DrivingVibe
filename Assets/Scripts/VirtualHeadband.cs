@@ -18,16 +18,22 @@ public class VirtualHeadband : MonoBehaviour
     // From 0~100
     public int[] VibratorFrequencies = new int[16];
 
-    // From 0~100 -> 0~150 intensity
+    // From 0~80 intensity
     public int[] VibratorIntensities = new int[16];
 
-    // From 0~50 -> 0~50 intensity
+    // From 0~40 intensity
+    public int[] VibratorMotionIntensities = new int[16];
+
+    // From 0~40 intensity
     public int[] VibratorAdditionalIntensities = new int[16];
     public bool additionalIntensityEnable;
 
     private int[] VibratorIntensityWeight = new int[16];
 
+    // For tactile motion
     public float[] VibratorLifeSpans = new float[16];
+
+    // For Rumbling
     public float[] VibratorAddiLifeSpans = new float[16];
 
     // get from calibration
@@ -110,12 +116,13 @@ public class VirtualHeadband : MonoBehaviour
         {
             VibratorIntensityWeight[i] = int.Parse(reader.ReadLine());
             VibratorIntensities[i] = 0;
+            VibratorMotionIntensities[i] = 0;
             VibratorAdditionalIntensities[i] = 0;
             VibratorFrequencies[i] = 58;
             VibratorLifeSpans[i] = 0.0f;
             VibratorAddiLifeSpans[i] = 0.0f;
         }
-        motionnMaxIntensity = maxValue;// int.Parse(reader.ReadLine());
+        motionnMaxIntensity = maxValue / 2; // int.Parse(reader.ReadLine());
         cueMaxIntensity = maxValue; //int.Parse(reader.ReadLine());
         reader.Close();
     }
@@ -125,6 +132,7 @@ public class VirtualHeadband : MonoBehaviour
         for (int i = 0; i < 16; i++)
         {
             VibratorIntensities[i] = 0;
+            VibratorMotionIntensities[i] = 0;
             VibratorFrequencies[i] = 58;
             VibratorLifeSpans[i] = 0.0f;
         }
@@ -136,26 +144,23 @@ public class VirtualHeadband : MonoBehaviour
         int freqTmp = 100;
         for (int i = 0; i < 16; i++)
         {
-            if (VibratorLifeSpans[i] > 0 || VibratorAddiLifeSpans[i] > 0)
+            if (VibratorLifeSpans[i] > 0 || VibratorLifeSpans[i] <= 0)
             {
                 intTmp = 0;
                 // translate the percentile intensity to real value
-                if (VibratorIntensities[i] > 0 && VibratorLifeSpans[i] > 0)
+                if (VibratorIntensities[i] > 0)
                 {
-                    if (isMotion)
-                    {
-                        maxiIntensity = motionnMaxIntensity;
-                    }
-                    else
-                    {
-                        maxiIntensity = cueMaxIntensity;
-                    }
-                    intTmp = (0 + (maxiIntensity - 0) * VibratorIntensities[i] / 100) * VibratorIntensityWeight[i] / 100;
+                    intTmp = (0 + (cueMaxIntensity - 0) * VibratorIntensities[i] / 100) * VibratorIntensityWeight[i] / 100;
                 }
                 else
                 {
                     // 0 means no vibration
                     intTmp = 0;
+                }
+
+                if(VibratorMotionIntensities[i] > 0 && VibratorLifeSpans[i] > 0)
+                {
+                    intTmp += (0 + (motionnMaxIntensity - 0) * VibratorMotionIntensities[i] / 100) * VibratorIntensityWeight[i] / 100;
                 }
 
                 if (VibratorAdditionalIntensities[i] > 0 && VibratorAddiLifeSpans[i] > 0)
@@ -168,12 +173,13 @@ public class VirtualHeadband : MonoBehaviour
                 // translate the percentile frequency to real value
                 if (VibratorFrequencies[i] > 0)
                 {
-                    freqTmp = minFreq + ((maxFreq - minFreq) * VibratorFrequencies[i] / 100);
+                    // freqTmp = minFreq + ((maxFreq - minFreq) * VibratorFrequencies[i] / 100);
+                    freqTmp = 170;
                 }
                 else
                 {
                     // 0 means least amount of frequency
-                    freqTmp = minFreq;
+                    freqTmp = 170;
                 }
 
                 // freqTmp = defaultFreq; // comment this if freq need to be mapping
