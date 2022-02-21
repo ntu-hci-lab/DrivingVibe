@@ -33,8 +33,21 @@ public class additionalIntensityGenerator : MonoBehaviour
     void Start()
     {
         virtualHeadband = gameObject.GetComponent<VirtualHeadband>();
+        StartCoroutine(waitThenStartSuspensionMonitor());
+    }
+
+    private IEnumerator waitThenStartSuspensionMonitor()
+    {
+        yield return new WaitForSeconds(0.5f);
+        for (int i = 0; i < 4; i++)
+        {
+            newSuspension[i] = gameObject.GetComponent<ACListener>().suspension[i];
+            suspensionDiff[i] = Mathf.Abs(newSuspension[i] - lastSuspension[i]) * diffAmplifyFactor;
+            lastSuspension[i] = newSuspension[i];
+        }
         StartCoroutine(suspensionMonitor());
     }
+
 
     // Update is called once per frame
     private IEnumerator suspensionMonitor()
