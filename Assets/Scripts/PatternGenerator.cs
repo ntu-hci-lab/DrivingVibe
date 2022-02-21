@@ -27,14 +27,15 @@ public class PatternGenerator : MonoBehaviour
         none = 0,
         directionalCue = 1,
         tactileMotion_magToIntensity = 2,
-        tactileMotion_magToISOI = 3
+        tactileMotion_magToISOI = 3,
+        cue_and_tactileMotion = 4
     }
     public PatternType MotionPatternType = PatternType.directionalCue;
     public PatternType DecelPatternType = PatternType.directionalCue;
     public PatternType AccelPatternType = PatternType.directionalCue;
     public PatternType TurnPatternType = PatternType.directionalCue;
 
-    public enum RegionType
+    public enum VibrationRegionType
     {
         none = 0,
         front = 1,
@@ -43,8 +44,8 @@ public class PatternGenerator : MonoBehaviour
         left = 4,
         backCue = 5
     };
-    private RegionType currentRegion = RegionType.none;
-    private RegionType lastRegion = RegionType.none;
+    private VibrationRegionType currentRegion = VibrationRegionType.none;
+    private VibrationRegionType lastRegion = VibrationRegionType.none;
 
     [Header("general variable")]
     // back
@@ -128,8 +129,8 @@ public class PatternGenerator : MonoBehaviour
         
         if(AccelPatternType == PatternType.tactileMotion_magToISOI)
         {
-            // duration fixed at 0.2s
-            // ISOI range: 0.05~0.12s
+            // duration range: 0.1~0.2s
+            // ISOI range: 0.06~0.12s
 
             // map ISOI to speed
             ISOI = maxISOI - (speed - speedMinThreshold) / (speedMaxThreshold - speedMinThreshold) * (maxISOI - minISOI);
@@ -137,27 +138,12 @@ public class PatternGenerator : MonoBehaviour
             // map ISOI to G 
             // ISOI = 0.12f - (planarGforceMagnitude - GforceMinThreshold) / (GforceMaxThreshold - GforceMinThreshold) * 0.07f;
             ISOI = Mathf.Max(ISOI, minISOI);
+            //ISOI = 0.12f;
 
             duration = minDuration + (ISOI - minISOI) / (maxISOI - minISOI) * (maxDuration - minDuration);
+            //duration = 0.2f;
             motionInterval = 4.0f * duration;
         }
-
-        /* bad
-        if (defaultTactileMotionEnable && speed > 0.01f)
-        {
-            // duration fixed at 0.2s
-            // magnitude is mapped to ISOI
-            // ISOI range: 0.05~0.12s
-            if (motionTimer < 0)
-            {
-                motionTimer = motionInterval;
-                virtualHeadband.isMotion = true;
-                StartCoroutine(generateMotion(true, 0.0f, -180.0f, 0.0f));
-                StartCoroutine(generateMotion(false, 0.0f, 180.0f, 0.0f));
-            }
-           
-        }
-        */
 
         if (intensityMappingEnable)
         {
@@ -170,9 +156,10 @@ public class PatternGenerator : MonoBehaviour
                     case PatternType.directionalCue:
                         if (planarGforceMagnitude > GforceMinThreshold)
                         {
-                            currentRegion = RegionType.front;
+                            currentRegion = VibrationRegionType.front;
                             if(currentRegion != lastRegion)
                             {
+                                motionTimer = -1.0f;
                                 StopAllCoroutines();
                                 virtualHeadband.setAllToZero();
                             }
@@ -184,46 +171,9 @@ public class PatternGenerator : MonoBehaviour
                             virtualHeadband.setAllToZero();
                         }
                         break;
-
-                    case PatternType.tactileMotion_magToIntensity:
-                        if (planarGforceMagnitude > GforceMinThreshold && motionTimer < 0)
-                        {
-                            currentRegion = RegionType.front;
-                            if (currentRegion != lastRegion)
-                            {
-                                StopAllCoroutines();
-                                virtualHeadband.setAllToZero();
-                            }
-                            // duration fixed at 0.2s
-                            // ISOI fixed at 0.1s
-                            motionTimer = motionInterval;
-                            virtualHeadband.isMotion = true;
-                            StartCoroutine(generateMotion(true, 0.0f, -180.0f, 0.0f));
-                            StartCoroutine(generateMotion(false, 0.0f, 180.0f, 0.0f));
-                        }
-                        break;
-
-                    case PatternType.tactileMotion_magToISOI:
-                        if (planarGforceMagnitude > GforceMinThreshold && motionTimer < 0)
-                        {   
-                            currentRegion = RegionType.front;
-                            if (currentRegion != lastRegion)
-                            {
-                                StopAllCoroutines();
-                                virtualHeadband.setAllToZero();
-                            }
-                            // duration fixed at 0.2s
-                            // magnitude is mapped to ISOI
-                            // ISOI range: 0.05~0.12s
-                            motionTimer = motionInterval;
-                            virtualHeadband.isMotion = true;
-                            StartCoroutine(generateMotion(true, 180.0f, 0.0f, 180.0f));
-                            StartCoroutine(generateMotion(false, -180.0f, 0.0f, -180.0f));
-                        }
-                        break;
                 }
             }
-            else if(GforceAngle >= 180.0f - accAngleRange || GforceAngle <= -180.0f + accAngleRange || planarGforceMagnitude < 0.01f)
+            else if(GforceAngle >= 180.0f - accAngleRange || GforceAngle <= -180.0f + accAngleRange)
             {
                 // acceleration, back part
                 switch (AccelPatternType)
@@ -231,9 +181,10 @@ public class PatternGenerator : MonoBehaviour
                     case PatternType.directionalCue:
                         if (planarGforceMagnitude > GforceMinThreshold)
                         {
-                            currentRegion = RegionType.back;
+                            currentRegion = VibrationRegionType.back;
                             if (currentRegion != lastRegion)
                             {
+                                motionTimer = -1.0f;
                                 StopAllCoroutines();
                                 virtualHeadband.setAllToZero();
                             }
@@ -246,84 +197,23 @@ public class PatternGenerator : MonoBehaviour
                         }
                         break;
 
-                    case PatternType.tactileMotion_magToIntensity:
-                        if (planarGforceMagnitude > GforceMinThreshold)
+                    case PatternType.cue_and_tactileMotion:
+                        currentRegion = VibrationRegionType.back;
+                        if (currentRegion != lastRegion)
                         {
-                            currentRegion = RegionType.back;
-                            if (currentRegion != lastRegion)
-                            {
-                                StopAllCoroutines();
-                                virtualHeadband.setAllToZero();
-                            }
-                            // duration fixed at 0.2s
-                            // ISOI fixed at 0.1s
-                            if (motionTimer < 0)
-                            {
-                                motionTimer = motionInterval;
-                                virtualHeadband.isMotion = true;
-                                StartCoroutine(generateMotion(true, 0.0f, -180.0f, 0.0f));
-                                StartCoroutine(generateMotion(false, 0.0f, 180.0f, 0.0f));
-                            }
+                            motionTimer = -1.0f;
+                            StopAllCoroutines();
+                            virtualHeadband.setAllToZero();
                         }
-                        else
+                        // use directional cue
+                        convertGforce(GforceAngle, planarGforceMagnitude);
+                        // use tactile motion magnitude is mapped to ISOI
+                        if (motionTimer < 0)
                         {
-                            if(lastRegion == RegionType.back)
-                            {
-                                // from acceleration to none, extend the motions
-                                currentRegion = RegionType.back;
-                                if (motionTimer < 0)
-                                {
-                                    motionTimer = motionInterval;
-                                    virtualHeadband.isMotion = true;
-                                    StartCoroutine(generateMotion(true, 0.0f, -180.0f, 0.0f));
-                                    StartCoroutine(generateMotion(false, 0.0f, 180.0f, 0.0f));
-                                }
-                            }
-                        }
-                        break;
-
-                    case PatternType.tactileMotion_magToISOI:
-                        if(justBrakeTimer > 0.0f)
-                        {
-                            // just brake, use directional cue
-                            if (planarGforceMagnitude > GforceMinThreshold)
-                            {
-                                currentRegion = RegionType.backCue;
-                                if (currentRegion != lastRegion)
-                                {
-                                    StopAllCoroutines();
-                                    virtualHeadband.setAllToZero();
-                                }
-                                virtualHeadband.isMotion = false;
-                                convertGforce(GforceAngle, planarGforceMagnitude * 2);
-                            }
-                            else
-                            {
-                                virtualHeadband.setAllToZero();
-                            }
-                        }
-                        else
-                        {
-                            // use tactile motion
-                            if (planarGforceMagnitude > GforceMinThreshold && motionTimer < 0)
-                            {
-                                currentRegion = RegionType.back;
-                                if (currentRegion != lastRegion)
-                                {
-                                    StopAllCoroutines();
-                                    virtualHeadband.setAllToZero();
-                                }
-                                // duration fixed at 0.2s
-                                // magnitude is mapped to ISOI
-                                // ISOI range: 0.05~0.12s
-                                if (motionTimer < 0)
-                                {
-                                    motionTimer = motionInterval;
-                                    virtualHeadband.isMotion = true;
-                                    StartCoroutine(generateMotion(true, 0.0f, -180.0f, 0.0f));
-                                    StartCoroutine(generateMotion(false, 0.0f, 180.0f, 0.0f));
-                                }
-                            }
+                            motionTimer = motionInterval;
+                            virtualHeadband.isMotion = true;
+                            StartCoroutine(generateMotion(true, 0.0f, -180.0f, 0.0f));
+                            StartCoroutine(generateMotion(false, 0.0f, 180.0f, 0.0f));
                         }
                         break;
                 }
@@ -336,9 +226,10 @@ public class PatternGenerator : MonoBehaviour
                     case PatternType.directionalCue:
                         if (planarGforceMagnitude > GforceMinThreshold)
                         {
-                            currentRegion = RegionType.right;
+                            currentRegion = VibrationRegionType.right;
                             if (currentRegion != lastRegion)
                             {
+                                motionTimer = -1.0f;
                                 StopAllCoroutines();
                                 virtualHeadband.setAllToZero();
                             }
@@ -351,38 +242,23 @@ public class PatternGenerator : MonoBehaviour
                         }
                         break;
 
-                    case PatternType.tactileMotion_magToIntensity:
-                        if (planarGforceMagnitude > GforceMinThreshold && motionTimer < 0)
+                    case PatternType.cue_and_tactileMotion:
+                        // Vibration at right, tactile motion at left
+                        currentRegion = VibrationRegionType.right;
+                        if (currentRegion != lastRegion)
                         {
-                            currentRegion = RegionType.right;
-                            if (currentRegion != lastRegion)
-                            {
-                                StopAllCoroutines();
-                                virtualHeadband.setAllToZero();
-                            }
+                            motionTimer = -1.0f;
+                            StopAllCoroutines();
+                            virtualHeadband.setAllToZero();
+                        }
+                        convertGforce(GforceAngle, planarGforceMagnitude);
+                        if (motionTimer < 0)
+                        {
                             // duration fixed at 0.2s
                             // ISOI fixed at 0.1s
                             motionTimer = motionInterval;
                             virtualHeadband.isMotion = true;
-                            StartCoroutine(generateMotion(true, 0.0f, -359.0f, 0.0f));
-                        }
-                        break;
-
-                    case PatternType.tactileMotion_magToISOI:
-                        if (planarGforceMagnitude > GforceMinThreshold && motionTimer < 0)
-                        {
-                            currentRegion = RegionType.right;
-                            if (currentRegion != lastRegion)
-                            {
-                                StopAllCoroutines();
-                                virtualHeadband.setAllToZero();
-                            }
-                            // duration fixed at 0.2s
-                            // magnitude is mapped to ISOI
-                            // ISOI range: 0.05~0.12s
-                            motionTimer = motionInterval;
-                            virtualHeadband.isMotion = true;
-                            StartCoroutine(generateMotion(true, 0.0f, -359.0f, 0.0f));
+                            StartCoroutine(generateMotion(false, 0.0f, 180.0f, 0.0f));
                         }
                         break;
                 }
@@ -395,9 +271,10 @@ public class PatternGenerator : MonoBehaviour
                     case PatternType.directionalCue:
                         if (planarGforceMagnitude > GforceMinThreshold)
                         {
-                            currentRegion = RegionType.left;
+                            currentRegion = VibrationRegionType.left;
                             if (currentRegion != lastRegion)
                             {
+                                motionTimer = -1.0f;
                                 StopAllCoroutines();
                                 virtualHeadband.setAllToZero();
                             }
@@ -410,38 +287,24 @@ public class PatternGenerator : MonoBehaviour
                         }
                         break;
 
-                    case PatternType.tactileMotion_magToIntensity:
-                        if (planarGforceMagnitude > GforceMinThreshold && motionTimer < 0)
+                    case PatternType.cue_and_tactileMotion:
+                        // Vibration at left, tactile motion at right
+                        currentRegion = VibrationRegionType.left;
+                        if (currentRegion != lastRegion)
                         {
-                            currentRegion = RegionType.left;
-                            if (currentRegion != lastRegion)
-                            {
-                                StopAllCoroutines();
-                                virtualHeadband.setAllToZero();
-                            }
-                            // duration fixed at 0.2s
-                            // ISOI fixed at 0.1s
-                            motionTimer = motionInterval;
-                            virtualHeadband.isMotion = true;
-                            StartCoroutine(generateMotion(false, 0.0f, 359.0f, 0.0f));
+                            motionTimer = -1.0f;
+                            StopAllCoroutines();
+                            virtualHeadband.setAllToZero();
                         }
-                        break;
-
-                    case PatternType.tactileMotion_magToISOI:
-                        if (planarGforceMagnitude > GforceMinThreshold && motionTimer < 0)
+                        convertGforce(GforceAngle, planarGforceMagnitude);
+                        if (motionTimer < 0)
                         {
-                            currentRegion = RegionType.left;
-                            if (currentRegion != lastRegion)
-                            {
-                                StopAllCoroutines();
-                                virtualHeadband.setAllToZero();
-                            }
                             // duration fixed at 0.2s
                             // magnitude is mapped to ISOI
                             // ISOI range: 0.05~0.12s
                             motionTimer = motionInterval;
                             virtualHeadband.isMotion = true;
-                            StartCoroutine(generateMotion(false, 0.0f, 359.0f, 0.0f));
+                            StartCoroutine(generateMotion(true, 0.0f, -180.0f, 0.0f));
                         }
                         break;
                 }

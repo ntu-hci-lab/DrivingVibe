@@ -879,10 +879,10 @@ MonoBehaviour:
   frequencyParameter: 2
   MotionPatternType: 3
   DecelPatternType: 1
-  AccelPatternType: 3
-  TurnPatternType: 1
-  accAngleRange: 60
-  decAngleRange: 30
+  AccelPatternType: 4
+  TurnPatternType: 4
+  accAngleRange: 45
+  decAngleRange: 45
   GforceMinThreshold: 0
   GforceMaxThreshold: 1
   speedMinThreshold: 0
@@ -970,7 +970,7 @@ MonoBehaviour:
   - 0
   - 0
   - 0
-  maxValue: 80
+  maxValue: 60
   isMotion: 0
   defaultFreq: 170
   minFreq: 170
@@ -1038,7 +1038,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 949571532}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0a964ffd217eeec44a4ff6e09e511e61, type: 3}
   m_Name: 
@@ -1048,7 +1048,7 @@ MonoBehaviour:
   minThreshold: 0.2
   maxThreshold: 3
   duration: 0.1
-  diffAmplifyFactor: 30
+  diffAmplifyFactor: 100
   suspensionDiff:
   - 0
   - 0
