@@ -816,6 +816,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   horizontalMultipler: 1
   longitudinalMultiplier: 1
+  accReduceFactor: 0.25
   hostIP: 127.0.0.1
   hostPort: 9996
   infoText: {fileID: 956803903}
@@ -879,8 +880,8 @@ MonoBehaviour:
   frequencyParameter: 2
   MotionPatternType: 3
   DecelPatternType: 1
-  AccelPatternType: 4
-  TurnPatternType: 4
+  AccelPatternType: 1
+  TurnPatternType: 1
   accAngleRange: 45
   decAngleRange: 45
   GforceMinThreshold: 0
@@ -970,7 +971,7 @@ MonoBehaviour:
   - 0
   - 0
   - 0
-  maxValue: 60
+  maxValue: 80
   isMotion: 0
   defaultFreq: 170
   minFreq: 170
@@ -1044,7 +1045,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   feedbackEnable: 1
-  maxAddiIntensity: 40
+  maxAddiIntensity: 50
   minThreshold: 0.2
   maxThreshold: 3
   duration: 0.1

@@ -38,6 +38,12 @@ public class additionalIntensityGenerator : MonoBehaviour
 
     private IEnumerator waitThenStartSuspensionMonitor()
     {
+        for (int i = 0; i < 4; i++)
+        {
+            newSuspension[i] = gameObject.GetComponent<ACListener>().suspension[i];
+            suspensionDiff[i] = Mathf.Abs(newSuspension[i] - lastSuspension[i]) * diffAmplifyFactor;
+            lastSuspension[i] = newSuspension[i];
+        }
         yield return new WaitForSeconds(0.5f);
         for (int i = 0; i < 4; i++)
         {

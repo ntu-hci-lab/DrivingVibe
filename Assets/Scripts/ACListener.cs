@@ -13,6 +13,7 @@ namespace AirDriVR
 {
     public class ACListener : GameListener
     {
+        public float accReduceFactor = 0.25f;
         public string hostIP = "127.0.0.1";
         public int hostPort = 9996;
 
@@ -136,7 +137,14 @@ namespace AirDriVR
                 }
                 */
                 infoText.text = info.ToString();
-                Gforce = new Vector2(info.accG_horizontal, info.accG_frontal);
+                if (info.accG_frontal < 0)
+                {
+                    Gforce = new Vector2(info.accG_horizontal * accReduceFactor, info.accG_frontal);
+                }
+                else
+                {
+                    Gforce = new Vector2(info.accG_horizontal, info.accG_frontal);
+                }
                 suspension = info.suspensionHeight;
                 velocity = info.speed_Ms;
                 carSlope = info.carSlope;
