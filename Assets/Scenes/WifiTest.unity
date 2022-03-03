@@ -130,6 +130,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 173899515}
+  - component: {fileID: 173899518}
+  - component: {fileID: 173899516}
   - component: {fileID: 173899514}
   m_Layer: 0
   m_Name: GameObject
@@ -147,9 +149,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 173899513}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d08923e02f6ab014ca89a972b0961aa6, type: 3}
+  m_Script: {fileID: 11500000, guid: 00bf06f9ece89074e812afa4f407a6b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  VibratorIntensities: 
 --- !u!4 &173899515
 Transform:
   m_ObjectHideFlags: 0
@@ -164,3 +167,74 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &173899516
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 173899513}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eeb1a1d399ae0694cbafc5050c475354, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  calibrationFilePath: D:\MotionBand-Study(final0827)\calibrationResults\
+  fileName: currentRecord.txt
+  isRandom: 0
+  UserID: 999
+  VibratorIntensities: 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+  VibratorMotionIntensities: 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+  VibratorAdditionalIntensities: 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+  additionalIntensityEnable: 0
+  VibratorLifeSpans:
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  VibratorAddiLifeSpans:
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  maxValue: 80
+  isMotion: 0
+  updateInterval: 0.1
+--- !u!114 &173899518
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 173899513}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bfca12940f5b97c418de498bf3fadde3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  arduinoPaused: 0
+  showString: 1

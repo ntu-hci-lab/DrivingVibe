@@ -63,7 +63,7 @@ public class ArduinoSystem : MonoBehaviour
     public void setAllToZero()
     {
         Debug.Log("Set all to zero");
-        for(int i = 0; i < 12; i++)
+        for(int i = 0; i < 16; i++)
         {
             setZero[0] = System.Convert.ToByte((char)i);
             if (sp != null && sp.IsOpen)
