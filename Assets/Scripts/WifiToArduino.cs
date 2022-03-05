@@ -14,12 +14,12 @@ public class WifiToArduino : MonoBehaviour
     public bool arduinoPaused = true;
     public bool showString = false;
 
-    private WifiVirtualHeadband wifiVirtualHeadband;
+    private VirtualLayer virtualLayer;
 
     // Start is called before the first frame update
     void Start()
     {
-        wifiVirtualHeadband = gameObject.GetComponent<WifiVirtualHeadband>();
+        virtualLayer = gameObject.GetComponent<VirtualLayer>();
 
         arduinoPaused = true;
         setZero = new byte[motorCount];
@@ -35,7 +35,7 @@ public class WifiToArduino : MonoBehaviour
             Debug.Log("Connection established!");
             socket.NoDelay = true;
             arduinoPaused = false;
-            StartCoroutine(wifiVirtualHeadband.sendHeadbandStateToArduino());
+            virtualLayer.StartMonitor();
         }
     }
 

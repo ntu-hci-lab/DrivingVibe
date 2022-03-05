@@ -5,82 +5,18 @@ using System.IO;
 using UnityEngine;
 using AirDriVR;
 
-public class WifiVirtualHeadband : MonoBehaviour
+public class WifiVirtualHeadband : VirtualLayer
 {
-private bool writeEnable = false;
-    public string calibrationFilePath = @"D:\calibrationResults\";
-    public string fileName = "0.txt";
-    public bool isRandom;
-    public int UserID = 0;
 
-    // From 0~80 intensity
-    public int[] VibratorIntensities = new int[16];
+    private WifiToArduino WifiArduinoSystem;
 
-    // From 0~40 intensity
-    public int[] VibratorMotionIntensities = new int[16];
+    private byte[] WifiToArduinoBytes = new byte[16];
 
-    // From 0~40 intensity
-    public int[] VibratorAdditionalIntensities = new int[16];
-    public bool additionalIntensityEnable;
-
-    private int[] VibratorIntensityWeight = new int[16];
-
-    // For tactile motion
-    public float[] VibratorLifeSpans = new float[16];
-
-    // For Rumbling
-    public float[] VibratorAddiLifeSpans = new float[16];
-
-    // get from calibration
-    private int maxIntensity;
-    private int cueMaxIntensity;
-    private int motionnMaxIntensity;
-    public int maxValue;
-    public bool isMotion;
-
-    public float updateInterval = 0.05f;
-
-    StreamWriter sw;
-
-    private WifiToArduino arduinoSystem;
-        
-    private byte[] toArduinoBytes = new byte[16];
-
-    // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
-        isMotion = false;
-        Iniitialize();
-        arduinoSystem = gameObject.GetComponent<WifiToArduino>();
-        //StartCoroutine(sendHeadbandStateToArduino());
-    }
-
-    void Iniitialize()
-    {
-        FileInfo calibrationFile = new FileInfo(calibrationFilePath + fileName);
-        StreamReader reader = calibrationFile.OpenText();
-        for (int i = 0; i < 16; i++)
-        {
-            VibratorIntensityWeight[i] = int.Parse(reader.ReadLine());
-            VibratorIntensities[i] = 0;
-            VibratorMotionIntensities[i] = 0;
-            VibratorAdditionalIntensities[i] = 0;
-            VibratorLifeSpans[i] = 0.0f;
-            VibratorAddiLifeSpans[i] = 0.0f;
-        }
+        WifiArduinoSystem = gameObject.GetComponent<WifiToArduino>();
         motionnMaxIntensity = maxValue / 2; // int.Parse(reader.ReadLine());
         cueMaxIntensity = maxValue; //int.Parse(reader.ReadLine());
-        reader.Close();
-    }
-
-    public void setAllToZero()
-    {
-        for (int i = 0; i < 16; i++)
-        {
-            VibratorIntensities[i] = 0;
-            VibratorMotionIntensities[i] = 0;
-            VibratorLifeSpans[i] = 0.0f;
-        }
     }
 
     public IEnumerator sendHeadbandStateToArduino()
@@ -110,18 +46,22 @@ private bool writeEnable = false;
             }
 
             intTmp = Mathf.Min(110, intTmp);
-
+            intTmp = 40;
             toArduinoBytes[i] = System.Convert.ToByte((char)intTmp);
 
             VibratorLifeSpans[i] -= updateInterval;
             VibratorAddiLifeSpans[i] -= updateInterval;
         }
-        arduinoSystem.writeToArduinoByte(toArduinoBytes);
-        Debug.Log("Just write something!!");
+        WifiArduinoSystem.writeToArduinoByte(toArduinoBytes);
         yield return new WaitForSeconds(updateInterval);
         // yield return 0;
         StartCoroutine(sendHeadbandStateToArduino());
         yield break;
+    }
+
+    public override void StartMonitor()
+    {
+        StartCoroutine(sendHeadbandStateToArduino());
     }
 
 }

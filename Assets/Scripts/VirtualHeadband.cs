@@ -37,7 +37,7 @@ public class VirtualHeadband : MonoBehaviour
     public float[] VibratorAddiLifeSpans = new float[16];
 
     // get from calibration
-    private int maxiIntensity;
+    private int maxIntensity;
     private int cueMaxIntensity;
     private int motionnMaxIntensity;
     public int maxValue;

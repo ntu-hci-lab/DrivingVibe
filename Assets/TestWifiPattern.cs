@@ -26,7 +26,7 @@ public class TestWifiPattern : MonoBehaviour
     {
         for (int i = 0; i < 16; i++)
         {
-            VibratorIntensities[i] = 30 - VibratorIntensities[i];
+            VibratorIntensities[i] = 40 - VibratorIntensities[i];
         }
     }
 
