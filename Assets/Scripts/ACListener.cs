@@ -42,11 +42,21 @@ namespace AirDriVR
         public Vector2 Gforce;
         public float velocity;
 
-        public float[] suspension = new float[4];
+        private float myTimeStamp;
+        private int lastRecordTime = 0;
+        private float[] lastSuspension = new float[4];
+        private float[] newSuspension = new float[4];
+        public float[] suspensionDiff = new float[4];
         public float carSlope;
 
         private void Start()
         {
+            for(int i = 0; i < 4; i++)
+            {
+                lastSuspension[i] = 0;
+                newSuspension[i] = 0;
+                suspensionDiff[i] = 0;
+            }
             Connect();
         }
         public void Connect()
@@ -136,18 +146,7 @@ namespace AirDriVR
                     
                 }
                 */
-                infoText.text = info.ToString();
-                if (info.accG_frontal < 0)
-                {
-                    Gforce = new Vector2(info.accG_horizontal * accReduceFactor, info.accG_frontal);
-                }
-                else
-                {
-                    Gforce = new Vector2(info.accG_horizontal, info.accG_frontal);
-                }
-                suspension = info.suspensionHeight;
-                velocity = info.speed_Ms;
-                carSlope = info.carSlope;
+                RecordParameters();
                 yield return 0;
                 // Debug.Log("In while loop! ");
             }
@@ -186,6 +185,39 @@ namespace AirDriVR
                 
                 logStreamWriter?.Dispose();
             }
+        }
+        private void RecordParameters()
+        {
+            infoText.text = info.ToString();
+            if (info.accG_frontal < 0)
+            {
+                Gforce = new Vector2(info.accG_horizontal * accReduceFactor, info.accG_frontal);
+            }
+            else
+            {
+                Gforce = new Vector2(info.accG_horizontal, info.accG_frontal);
+            }
+
+            if(lastRecordTime < info.lapTime)
+            {
+                if (info.suspensionHeight != null)
+                {
+                    newSuspension = info.suspensionHeight;
+                }
+
+                for (int i = 0; i < 4; i++)
+                {
+                    suspensionDiff[i] = Mathf.Abs(newSuspension[i] - lastSuspension[i]) / (info.lapTime - lastRecordTime) * 1000;
+                    lastSuspension[i] = newSuspension[i];
+                }
+                lastRecordTime = info.lapTime;
+            }
+            else
+            {
+                lastRecordTime = info.lapTime;
+            }
+            velocity = info.speed_Ms;
+            carSlope = info.carSlope;
         }
     }
 }

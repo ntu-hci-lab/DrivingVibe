@@ -381,44 +381,6 @@ public class partiallyRandomVibration : MonoBehaviour
 
         lastRegion = currentRegion;
 
-        if (frequencyMappingEnable)
-        {
-            float tmp;
-            switch (frequencyParameter)
-            {
-                case ParameterType.constant:
-                    // set to default freq
-                    for (int i = 0; i < 16; i++)
-                    {
-                        virtualHeadband.VibratorFrequencies[i] = (virtualHeadband.defaultFreq - virtualHeadband.minFreq) * 100 / (virtualHeadband.maxFreq - virtualHeadband.minFreq);
-                    }
-                    break;
-
-                case ParameterType.Gforce:
-                    for (int i = 0; i < 16; i++)
-                    {
-                        tmp = Mathf.Min(planarGforceMagnitude, GforceMaxThreshold);
-                        virtualHeadband.VibratorFrequencies[i] = Mathf.FloorToInt((tmp - GforceMinThreshold) * 100.0f / (GforceMaxThreshold - GforceMinThreshold));
-                    }
-                    break;
-
-                case ParameterType.velocity:
-                    for (int i = 0; i < 16; i++)
-                    {
-                        tmp = Mathf.Min(speed, speedMaxThreshold);
-                        virtualHeadband.VibratorFrequencies[i] = Mathf.FloorToInt((tmp - speedMinThreshold) * 100.0f / (speedMaxThreshold - speedMinThreshold));
-                    }
-                    break;
-            }
-        }
-        else
-        {
-            for (int i = 0; i < 16; i++)
-            {
-                virtualHeadband.VibratorFrequencies[i] = (virtualHeadband.defaultFreq - virtualHeadband.minFreq) * 100 / (virtualHeadband.maxFreq - virtualHeadband.minFreq);
-            }
-        }
-
     }
 
     void checkAngles()

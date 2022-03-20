@@ -42,10 +42,6 @@ public class simpleSuspensionPattern : MonoBehaviour
 
         float suspensionOffset;
 
-        for (int i = 0; i < 4; i++)
-        {
-            suspension[i] = gameObject.GetComponent<ACListener>().suspension[i];
-        }
 
         if (lowSusVibration)
         {
@@ -159,23 +155,6 @@ public class simpleSuspensionPattern : MonoBehaviour
                     virtualHeadband.VibratorIntensities[frontLeftIndice[i]] = 0;
                     virtualHeadband.VibratorLifeSpans[frontLeftIndice[i]] = 0.0f;
                 }
-            }
-        }
-
-        if (frequencyMappingEnable)
-        {
-            float tmp;
-            tmp = Mathf.Min(speed, speedMaxThreshold);
-            for (int i = 0; i < 16; i++)
-            {
-                virtualHeadband.VibratorFrequencies[i] = Mathf.FloorToInt((tmp - speedMinThreshold) * 100.0f / (speedMaxThreshold - speedMinThreshold));
-            }
-        }
-        else
-        {
-            for (int i = 0; i < 16; i++)
-            {
-                virtualHeadband.VibratorFrequencies[i] = (virtualHeadband.defaultFreq - virtualHeadband.minFreq) * 100 / (virtualHeadband.maxFreq - virtualHeadband.minFreq);
             }
         }
     }

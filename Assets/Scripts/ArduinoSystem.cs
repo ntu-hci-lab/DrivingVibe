@@ -12,7 +12,7 @@ public class ArduinoSystem : MonoBehaviour
     public int baudRate = 115200;
     public SerialPort sp;
 
-    public bool arduinoPaused;
+    public bool arduinoPaused = true;
 
     public bool showString = true;
 
@@ -20,6 +20,7 @@ public class ArduinoSystem : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        arduinoPaused = true;
         setZero[0] = System.Convert.ToByte((char)0);
         setZero[1] = System.Convert.ToByte((char)100);
         setZero[2] = System.Convert.ToByte((char)0);
@@ -29,8 +30,21 @@ public class ArduinoSystem : MonoBehaviour
 
         sp = new SerialPort(serialName, baudRate);
         sp.Open();
+        if (sp.IsOpen)
+        {
+            arduinoPaused = false;
+        }
     }
-
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            if (!sp.IsOpen)
+            {
+                ReOpen();
+            }
+        }
+    }
     public void startArduino()
     {
         arduinoPaused = false;
@@ -56,8 +70,24 @@ public class ArduinoSystem : MonoBehaviour
 
     public void ReOpen()
     {
+        if (sp.IsOpen)
+        {
+            Debug.Log("Close current serialPort.");
+            sp.Close();
+            arduinoPaused = true;
+        }
+        else
+        {
+            Debug.Log("No connection right now.");
+        }
         sp = new SerialPort(serialName, baudRate);
         sp.Open();
+        if (sp.IsOpen)
+        {
+            Debug.Log("SerialPort established!");
+            arduinoPaused = false;
+        }
+
     }
 
     public void setAllToZero()

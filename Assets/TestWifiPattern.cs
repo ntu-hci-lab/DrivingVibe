@@ -4,12 +4,24 @@ using UnityEngine;
 
 public class TestWifiPattern : MonoBehaviour
 {
-    private WifiVirtualHeadband virtualHeadband;
-    public int[] VibratorIntensities;
+    private WifiToArduino wifi;
+    private VirtualLayer virtualLayer;
+    private int[] VibratorIntensities = new int[16];
+    public float interval = 1.0f;
+    public int intensity = 20;
+    public enum PatternChoose
+    {
+        Cycle = 0,
+        Static = 1,
+        AllOnOff = 2
+    }
+    public PatternChoose patternChoose = PatternChoose.AllOnOff;
+
     void Start()
     {
-        virtualHeadband = gameObject.GetComponent<WifiVirtualHeadband>();
-        VibratorIntensities = virtualHeadband.VibratorIntensities;
+        wifi = gameObject.GetComponent<WifiToArduino>();
+        virtualLayer = gameObject.GetComponent<VirtualLayer>();
+        VibratorIntensities = virtualLayer.VibratorIntensities;
     }
 
     // Update is called once per frame
@@ -17,31 +29,67 @@ public class TestWifiPattern : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            //StartCoroutine(testPattern());
-            anotherPattern();
+            switch (patternChoose)
+            {
+                case PatternChoose.Cycle:
+                    StartCoroutine(CyclePattern());
+                    break;
+                case PatternChoose.Static:
+                    StartCoroutine(StaticPattern());
+                    break;
+                case PatternChoose.AllOnOff:
+                    AllOnOffPattern();
+                    break;
+            }
         }
-    }
-
-    private void anotherPattern()
-    {
-        for (int i = 0; i < 16; i++)
+        if (Input.GetKeyDown(KeyCode.Q))
         {
-            VibratorIntensities[i] = 40 - VibratorIntensities[i];
+            StopAllCoroutines();
+            //wifi.setAllToZero();
+            virtualLayer.setAllToZero();
         }
     }
 
-    private IEnumerator testPattern()
+
+    private IEnumerator CyclePattern()
     {
         for(int i = 0; i < 16; i++)
         {
-            VibratorIntensities[i] = 40;
-            yield return new WaitForSeconds(0.2f);
-        }
-        for (int i = 0; i < 16; i++)
-        {
-            VibratorIntensities[i] = 0;
-            yield return new WaitForSeconds(0.2f);
+            for(int j = 0; j < 16; j++)
+            {
+                VibratorIntensities[j] = 0;
+            }
+            VibratorIntensities[i] = intensity;
+            yield return new WaitForSeconds(interval);
         }
         yield break;
+    }
+    private IEnumerator StaticPattern()
+    {
+        for (int i = 0; i < 5; i++)
+        {
+            for (int j = 0; j < 16; j++)
+            {
+                VibratorIntensities[j] = intensity;
+            }
+            yield return new WaitForSeconds(interval);
+            for (int j = 0; j < 16; j++)
+            {
+                VibratorIntensities[j] = 0;
+            }
+            yield return new WaitForSeconds(interval);
+        }
+        yield break;
+    }
+
+    private void AllOnOffPattern()
+    {
+        byte[] input = new byte[16];
+        for (int i = 0; i < 16; i++)
+        {
+            VibratorIntensities[i] = intensity - VibratorIntensities[i];
+            input[i] = System.Convert.ToByte((char)VibratorIntensities[i]);
+        }
+        // wifi.writeToArduinoByte(input);
     }
 }

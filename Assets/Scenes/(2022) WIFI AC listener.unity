@@ -770,11 +770,9 @@ GameObject:
   - component: {fileID: 949571533}
   - component: {fileID: 949571537}
   - component: {fileID: 949571540}
-  - component: {fileID: 949571541}
   - component: {fileID: 949571535}
-  - component: {fileID: 949571543}
   - component: {fileID: 949571534}
-  - component: {fileID: 949571538}
+  - component: {fileID: 949571543}
   - component: {fileID: 949571542}
   - component: {fileID: 949571539}
   - component: {fileID: 949571536}
@@ -818,7 +816,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   horizontalMultipler: 1
   longitudinalMultiplier: 1
-  accReduceFactor: 0.25
+  accReduceFactor: 1
   hostIP: 127.0.0.1
   hostPort: 9996
   infoText: {fileID: 956803903}
@@ -827,7 +825,7 @@ MonoBehaviour:
   logFolder: C:\Users\paulpork\Desktop
   Gforce: {x: 0, y: 0}
   velocity: 0
-  suspension:
+  suspensionDiff:
   - 0
   - 0
   - 0
@@ -856,55 +854,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 949571532}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5dbdd3f61ba8c9244b3d824c27a269f3, type: 3}
+  m_Script: {fileID: 11500000, guid: 88bec44cb3e12484abb89caed2e11d91, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  useWifi: 1
-  calibrationFilePath: D:\calibrationResults\
-  fileName: 0.txt
-  isRandom: 0
-  UserID: 0
-  VibratorIntensities: 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-  VibratorMotionIntensities: 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-  VibratorAdditionalIntensities: 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-  additionalIntensityEnable: 0
-  VibratorLifeSpans:
+  FilePath: D:\vibrateRecords\
+  recordLength: 60
+  recordCount: 0
+  suspensionDiff:
   - 0
   - 0
   - 0
   - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  VibratorAddiLifeSpans:
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  maxValue: 0
-  isMotion: 0
-  updateInterval: 0.05
 --- !u!114 &949571537
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -912,19 +872,18 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 949571532}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 883686720209a734cb568ed4af4074e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   lowSusVibration: 0
   intensityMappingEnable: 1
-  frequencyMappingEnable: 0
   defaultTactileMotionEnable: 0
   frequencyParameter: 2
   MotionPatternType: 3
   DecelPatternType: 1
-  AccelPatternType: 1
+  AccelPatternType: 4
   TurnPatternType: 1
   accAngleRange: 45
   decAngleRange: 45
@@ -959,68 +918,6 @@ MonoBehaviour:
   - 0
   - 0
   - 0
---- !u!114 &949571538
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 949571532}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 958fff7e320639d4396a7a7bd48d096a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  calibrationFilePath: D:\MotionBand-Study(final0827)\calibrationResults\
-  fileName: currentRecord.txt
-  vibrationRecordPath: D:\MotionBand-Study(final0827)\vibrationRecord\
-  isRandom: 0
-  UserID: 999
-  VibratorFrequencies: 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-  VibratorIntensities: 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-  VibratorMotionIntensities: 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-  VibratorAdditionalIntensities: 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-  additionalIntensityEnable: 1
-  VibratorLifeSpans:
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  VibratorAddiLifeSpans:
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  maxValue: 80
-  isMotion: 0
-  defaultFreq: 170
-  minFreq: 170
-  maxFreq: 170
-  updateInterval: 0.02
 --- !u!114 &949571539
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1028,7 +925,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 949571532}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8b73b45169e3c98479317b241756ee9a, type: 3}
   m_Name: 
@@ -1083,7 +980,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 949571532}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0a964ffd217eeec44a4ff6e09e511e61, type: 3}
   m_Name: 
@@ -1091,7 +988,7 @@ MonoBehaviour:
   feedbackEnable: 1
   maxAddiIntensity: 50
   minThreshold: 0.2
-  maxThreshold: 3
+  maxThreshold: 10
   duration: 0.1
   diffAmplifyFactor: 100
   suspensionDiff:
@@ -1099,7 +996,7 @@ MonoBehaviour:
   - 0
   - 0
   - 0
---- !u!114 &949571541
+--- !u!114 &949571542
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1108,37 +1005,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 949571532}
   m_Enabled: 0
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 52605f197a9fb824cb5f474ad104cb8c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  vibratorSwitchInterval: 0.2
-  vibratorSwitchTimer: 0
-  parameterSwitchInterval: 2
-  parameterSwitchTimer: 0
-  noiseSampleInterval: 0.2
-  noiseSampleTimer: 0
-  whiteNoise: 0
---- !u!114 &949571542
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 949571532}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: eeb1a1d399ae0694cbafc5050c475354, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   useWifi: 1
-  calibrationFilePath: D:\calibrationResults\
-  fileName: 0.txt
+  calibrationFilePath: D:\MotionBand-Study(final0827)\calibrationResults\
+  fileName: 999.txt
   isRandom: 0
-  UserID: 0
+  UserID: 999
   VibratorIntensities: 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
   VibratorMotionIntensities: 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
   VibratorAdditionalIntensities: 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-  additionalIntensityEnable: 0
+  additionalIntensityEnable: 1
+  VibratorIntensityWeight: 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
   VibratorLifeSpans:
   - 0
   - 0
@@ -1173,9 +1052,9 @@ MonoBehaviour:
   - 0
   - 0
   - 0
-  maxValue: 0
+  maxValue: 80
   isMotion: 0
-  updateInterval: 0.05
+  FramesPerUpdate: 2
 --- !u!114 &949571543
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1183,7 +1062,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 949571532}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bfca12940f5b97c418de498bf3fadde3, type: 3}
   m_Name: 
@@ -1855,8 +1734,8 @@ Camera:
     m_Bits: 4294967295
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
-  m_TargetDisplay: 0
-  m_TargetEye: 3
+  m_TargetDisplay: 1
+  m_TargetEye: 0
   m_HDR: 1
   m_AllowMSAA: 1
   m_AllowDynamicResolution: 0

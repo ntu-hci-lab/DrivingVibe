@@ -9,7 +9,6 @@ public class ShowVibration : MonoBehaviour
     protected int[] VibratorIntensities = new int[16];
     protected int[] VibratorMotionIntensities = new int[16];
     protected int[] VibratorAddiIntensities = new int[16];
-    protected int[] VibratorFrequencies = new int[16];
     protected float[] VibratorAddiLifeSpans = new float[16];
     public float[] VibratorLifeSpans = new float[16];
     public GameObject[] Motors;
@@ -24,13 +23,12 @@ public class ShowVibration : MonoBehaviour
 
     void Start()
     {
-        VibratorIntensities = gameObject.GetComponent<VirtualHeadband>().VibratorIntensities;
-        VibratorLifeSpans = gameObject.GetComponent<VirtualHeadband>().VibratorLifeSpans;
-        VibratorMotionIntensities = gameObject.GetComponent<VirtualHeadband>().VibratorMotionIntensities;
-        VibratorAddiIntensities = gameObject.GetComponent<VirtualHeadband>().VibratorAdditionalIntensities;
-        VibratorFrequencies = gameObject.GetComponent<VirtualHeadband>().VibratorFrequencies;
-        VibratorAddiLifeSpans = gameObject.GetComponent<VirtualHeadband>().VibratorAddiLifeSpans;
-
+        VibratorIntensities = gameObject.GetComponent<VirtualLayer>().VibratorIntensities;
+        VibratorLifeSpans = gameObject.GetComponent<VirtualLayer>().VibratorLifeSpans;
+        VibratorMotionIntensities = gameObject.GetComponent<VirtualLayer>().VibratorMotionIntensities;
+        VibratorAddiIntensities = gameObject.GetComponent<VirtualLayer>().VibratorAdditionalIntensities;
+        VibratorAddiLifeSpans = gameObject.GetComponent<VirtualLayer>().VibratorAddiLifeSpans;
+        maxColor = Color.red;
         for (int i = 0; i < 16; i++)
         {
             MotorImages[i] = Motors[i].GetComponent<RawImage>();
@@ -42,7 +40,6 @@ public class ShowVibration : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        maxColor = Color.Lerp(Color.red, Color.red, ((float)VibratorFrequencies[0]) / 100.0f);
         for (int i = 0; i < 16; i++)
         {
             if ((VibratorIntensities[i] > 0 || VibratorLifeSpans[i] > 0 || VibratorAddiLifeSpans[i] > 0) && (VibratorIntensities[i] + VibratorMotionIntensities[i] + VibratorAddiIntensities[i])> 0 && VibratorIntensities[i] <= 100)
@@ -54,15 +51,5 @@ public class ShowVibration : MonoBehaviour
                 MotorImages[i].color = Color.white;
             }
         }
-
-        for(int i = 0; i < 4; i++)
-        {
-            newSuspension[i] = gameObject.GetComponent<ACListener>().suspension[i];
-        }
-
-        frontLeft.GetComponent<Image>().fillAmount = newSuspension[3] * 5;
-        frontRight.GetComponent<Image>().fillAmount = newSuspension[2] * 5;
-        backLeft.GetComponent<Image>().fillAmount = newSuspension[1] * 5;
-        backRight.GetComponent<Image>().fillAmount = newSuspension[0] * 5;
     }
 }

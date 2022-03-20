@@ -10,8 +10,6 @@ public class PatternGenerator : MonoBehaviour
     [Header("pattern choice")]
     // turn off then no vibration
     public bool intensityMappingEnable;
-    // turn off then constant frequency
-    public bool frequencyMappingEnable;
     // turn on then always map velocity to tactile motion, remember to turn acc pattern to cue
     public bool defaultTactileMotionEnable;
     public enum ParameterType
@@ -87,7 +85,7 @@ public class PatternGenerator : MonoBehaviour
     [HideInInspector]
     public float[] angleOfEachVibrator = new float[16]; // 0 degree -> forward, increase clockwisely from -180 ~ 180
 
-    private VirtualHeadband virtualHeadband;
+    private VirtualLayer virtualLayer;
 
     private float justBrakeTimer;
 
@@ -98,7 +96,7 @@ public class PatternGenerator : MonoBehaviour
         checkAngles();
         Gforce = Vector3.zero;
         intensityMappingEnable = true;
-        virtualHeadband = gameObject.GetComponent<VirtualHeadband>();
+        virtualLayer = gameObject.GetComponent<VirtualLayer>();
     }
 
     // Update is called once per frame
@@ -127,7 +125,7 @@ public class PatternGenerator : MonoBehaviour
         invGforceAngle = Vector2.SignedAngle(planarGforce, new Vector2(0.0f, 1.0f));
 
         
-        if(AccelPatternType == PatternType.tactileMotion_magToISOI)
+        if(AccelPatternType == PatternType.cue_and_tactileMotion)
         {
             // duration range: 0.1~0.2s
             // ISOI range: 0.06~0.12s
@@ -142,7 +140,7 @@ public class PatternGenerator : MonoBehaviour
 
             duration = minDuration + (ISOI - minISOI) / (maxISOI - minISOI) * (maxDuration - minDuration);
             //duration = 0.2f;
-            motionInterval = 4.0f * duration;
+            motionInterval = 6.0f * duration;
         }
 
         if (intensityMappingEnable)
@@ -161,14 +159,14 @@ public class PatternGenerator : MonoBehaviour
                             {
                                 motionTimer = -1.0f;
                                 StopAllCoroutines();
-                                virtualHeadband.setAllToZero();
+                                virtualLayer.setAllToZero();
                             }
-                            virtualHeadband.isMotion = false;
+                            virtualLayer.isMotion = false;
                             convertGforce(GforceAngle, planarGforceMagnitude);
                         }
                         else
                         {
-                            virtualHeadband.setAllToZero();
+                            virtualLayer.setAllToZero();
                         }
                         break;
                 }
@@ -186,14 +184,14 @@ public class PatternGenerator : MonoBehaviour
                             {
                                 motionTimer = -1.0f;
                                 StopAllCoroutines();
-                                virtualHeadband.setAllToZero();
+                                virtualLayer.setAllToZero();
                             }
-                            virtualHeadband.isMotion = false;
+                            virtualLayer.isMotion = false;
                             convertGforce(GforceAngle, planarGforceMagnitude);
                         }
                         else
                         {
-                            virtualHeadband.setAllToZero();
+                            virtualLayer.setAllToZero();
                         }
                         break;
 
@@ -203,7 +201,7 @@ public class PatternGenerator : MonoBehaviour
                         {
                             motionTimer = -1.0f;
                             StopAllCoroutines();
-                            virtualHeadband.setAllToZero();
+                            virtualLayer.setAllToZero();
                         }
                         // use directional cue
                         convertGforce(GforceAngle, planarGforceMagnitude);
@@ -211,7 +209,7 @@ public class PatternGenerator : MonoBehaviour
                         if (motionTimer < 0)
                         {
                             motionTimer = motionInterval;
-                            virtualHeadband.isMotion = true;
+                            virtualLayer.isMotion = true;
                             StartCoroutine(generateMotion(true, 0.0f, -180.0f, 0.0f));
                             StartCoroutine(generateMotion(false, 0.0f, 180.0f, 0.0f));
                         }
@@ -231,14 +229,14 @@ public class PatternGenerator : MonoBehaviour
                             {
                                 motionTimer = -1.0f;
                                 StopAllCoroutines();
-                                virtualHeadband.setAllToZero();
+                                virtualLayer.setAllToZero();
                             }
-                            virtualHeadband.isMotion = false;
+                            virtualLayer.isMotion = false;
                             convertGforce(GforceAngle, planarGforceMagnitude);
                         }
                         else
                         {
-                            virtualHeadband.setAllToZero();
+                            virtualLayer.setAllToZero();
                         }
                         break;
 
@@ -249,7 +247,7 @@ public class PatternGenerator : MonoBehaviour
                         {
                             motionTimer = -1.0f;
                             StopAllCoroutines();
-                            virtualHeadband.setAllToZero();
+                            virtualLayer.setAllToZero();
                         }
                         convertGforce(GforceAngle, planarGforceMagnitude);
                         if (motionTimer < 0)
@@ -257,7 +255,7 @@ public class PatternGenerator : MonoBehaviour
                             // duration fixed at 0.2s
                             // ISOI fixed at 0.1s
                             motionTimer = motionInterval;
-                            virtualHeadband.isMotion = true;
+                            virtualLayer.isMotion = true;
                             StartCoroutine(generateMotion(false, 0.0f, 180.0f, 0.0f));
                         }
                         break;
@@ -276,14 +274,14 @@ public class PatternGenerator : MonoBehaviour
                             {
                                 motionTimer = -1.0f;
                                 StopAllCoroutines();
-                                virtualHeadband.setAllToZero();
+                                virtualLayer.setAllToZero();
                             }
-                            virtualHeadband.isMotion = false;
+                            virtualLayer.isMotion = false;
                             convertGforce(GforceAngle, planarGforceMagnitude);
                         }
                         else
                         {
-                            virtualHeadband.setAllToZero();
+                            virtualLayer.setAllToZero();
                         }
                         break;
 
@@ -294,7 +292,7 @@ public class PatternGenerator : MonoBehaviour
                         {
                             motionTimer = -1.0f;
                             StopAllCoroutines();
-                            virtualHeadband.setAllToZero();
+                            virtualLayer.setAllToZero();
                         }
                         convertGforce(GforceAngle, planarGforceMagnitude);
                         if (motionTimer < 0)
@@ -303,7 +301,7 @@ public class PatternGenerator : MonoBehaviour
                             // magnitude is mapped to ISOI
                             // ISOI range: 0.05~0.12s
                             motionTimer = motionInterval;
-                            virtualHeadband.isMotion = true;
+                            virtualLayer.isMotion = true;
                             StartCoroutine(generateMotion(true, 0.0f, -180.0f, 0.0f));
                         }
                         break;
@@ -312,38 +310,6 @@ public class PatternGenerator : MonoBehaviour
         }
 
         lastRegion = currentRegion;
-
-        if (frequencyMappingEnable)
-        {
-            float tmp;  
-            switch (frequencyParameter)
-            {
-                case ParameterType.constant:
-                    // set to default freq
-                    for (int i = 0; i < 16; i++)
-                    {
-                        virtualHeadband.VibratorFrequencies[i] = (virtualHeadband.defaultFreq - virtualHeadband.minFreq) * 100 / (virtualHeadband.maxFreq - virtualHeadband.minFreq);
-                    }
-                    break;
-
-                case ParameterType.Gforce:
-                    for (int i = 0; i < 16; i++)
-                    {
-                        tmp = Mathf.Min(planarGforceMagnitude, GforceMaxThreshold);
-                        virtualHeadband.VibratorFrequencies[i] = Mathf.FloorToInt((tmp - GforceMinThreshold) * 100.0f / (GforceMaxThreshold - GforceMinThreshold));
-                    }
-                    break;
-
-                case ParameterType.velocity:
-                    for (int i = 0; i < 16; i++)
-                    {
-                        tmp = Mathf.Min(speed, speedMaxThreshold);
-                        virtualHeadband.VibratorFrequencies[i] = Mathf.FloorToInt((tmp - speedMinThreshold) * 100.0f / (speedMaxThreshold - speedMinThreshold));
-                    }
-                    break;
-            }
-        }
-
     }
 
     void checkAngles()
@@ -411,7 +377,7 @@ public class PatternGenerator : MonoBehaviour
             }
             else
             {
-                virtualHeadband.VibratorIntensities[i] = 0;
+                virtualLayer.VibratorIntensities[i] = 0;
             }
         }
     }
@@ -419,15 +385,15 @@ public class PatternGenerator : MonoBehaviour
 
     private void setVibratorIntensity(float angleDiff, float G_mag, int VibratorIndex)
     {
-        virtualHeadband.VibratorIntensities[VibratorIndex] = Mathf.FloorToInt(calculateIntensity(angleDiff, G_mag));
-        // virtualHeadband.VibratorLifeSpans[VibratorIndex] = 1.0f;
+        // from 0~100
+        virtualLayer.VibratorIntensities[VibratorIndex] = Mathf.FloorToInt(calculateIntensity(angleDiff, G_mag));
     }
 
     private float calculateIntensity(float angleDiff, float G_mag)
     {
         G_mag = Mathf.Min(GforceMaxThreshold, G_mag);
         G_mag = Mathf.Max(G_mag, GforceMinThreshold);
-        float ret = (G_mag - GforceMinThreshold) / (GforceMaxThreshold - GforceMinThreshold) * 100.0f * (angleThreshold - angleDiff) / angleThreshold;
+        float ret = (G_mag / GforceMaxThreshold) * ((angleThreshold - angleDiff) / angleThreshold) * 100.0f;
         return ret;
     }
 
@@ -439,7 +405,7 @@ public class PatternGenerator : MonoBehaviour
             yield break;
         }
         float angleSpeed = 22.5f / ISOI;
-        float angleStep = angleSpeed * Time.deltaTime;
+        float angleStep = angleSpeed * Time.fixedDeltaTime;
         float nextAngle = currentAngle;
         bool activateThisIndex = false;
         if (isClockwise)
@@ -487,20 +453,20 @@ public class PatternGenerator : MonoBehaviour
 
             if (activateThisIndex)
             {
-                virtualHeadband.VibratorLifeSpans[i] = duration;
+                virtualLayer.VibratorLifeSpans[i] = duration;
                 if (MotionPatternType == PatternType.tactileMotion_magToIntensity)
                 {
-                    virtualHeadband.VibratorMotionIntensities[i] = Mathf.FloorToInt(calculateIntensity(0.0f, planarGforceMagnitude));
+                    virtualLayer.VibratorMotionIntensities[i] = Mathf.FloorToInt(calculateIntensity(0.0f, planarGforceMagnitude));
                 }
                 else
                 {
                     // From 0 ~ 100
-                    virtualHeadband.VibratorMotionIntensities[i] = Mathf.FloorToInt(calculateIntensity(0.0f, speed / (speedMaxThreshold - speedMinThreshold)));
+                    virtualLayer.VibratorMotionIntensities[i] = Mathf.FloorToInt(calculateIntensity(0.0f, speed / (speedMaxThreshold - speedMinThreshold)));
                 }
             }
         }
 
-        yield return 0;
+        yield return new WaitForFixedUpdate();
         StartCoroutine(generateMotion(isClockwise, startAngle, endAngle, nextAngle));
         yield break;
     }

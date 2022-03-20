@@ -132,15 +132,13 @@ GameObject:
   - component: {fileID: 170911446}
   - component: {fileID: 170911445}
   - component: {fileID: 170911444}
-  - component: {fileID: 170911448}
-  - component: {fileID: 170911447}
   m_Layer: 0
   m_Name: GameObject (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &170911444
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -150,12 +148,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 170911443}
   m_Enabled: 0
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 43ba2489e00df3a4f9325900453e3fa6, type: 3}
+  m_Script: {fileID: 11500000, guid: 21b2b608312a9eb4593f44959e000e72, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  wifiToArduino: {fileID: 170911445}
-  data: 00000000000000000000000000000000
-  interval: 1
+  serialName: COM3
+  baudRate: 115200
 --- !u!114 &170911445
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -163,7 +160,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 170911443}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bfca12940f5b97c418de498bf3fadde3, type: 3}
   m_Name: 
@@ -184,80 +181,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &170911447
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 170911443}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eeb1a1d399ae0694cbafc5050c475354, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  useWifi: 1
-  calibrationFilePath: D:\MotionBand-Study(final0827)\calibrationResults\
-  fileName: 999.txt
-  isRandom: 0
-  UserID: 999
-  VibratorIntensities: 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-  VibratorMotionIntensities: 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-  VibratorAdditionalIntensities: 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-  additionalIntensityEnable: 1
-  VibratorIntensityWeight: 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-  VibratorLifeSpans:
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  VibratorAddiLifeSpans:
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  maxValue: 80
-  isMotion: 0
-  updateInterval: 0.1
---- !u!114 &170911448
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 170911443}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 00bf06f9ece89074e812afa4f407a6b3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  interval: 0.5
-  intensity: 40
-  patternChoose: 0
 --- !u!1 &173899513
 GameObject:
   m_ObjectHideFlags: 0
@@ -276,7 +199,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &173899514
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -290,8 +213,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   interval: 1
-  intensity: 20
-  patternChoose: 0
+  intensity: 50
+  patternChoose: 2
 --- !u!4 &173899515
 Transform:
   m_ObjectHideFlags: 0
@@ -364,7 +287,7 @@ MonoBehaviour:
   - 0
   maxValue: 80
   isMotion: 0
-  updateInterval: 0.1
+  FramesPerUpdate: 2
 --- !u!114 &173899518
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -377,5 +300,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bfca12940f5b97c418de498bf3fadde3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  arduinoPaused: 0
+  arduinoPaused: 1
   showString: 1

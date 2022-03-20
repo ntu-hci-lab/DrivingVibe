@@ -8,19 +8,17 @@ public class WifiToArduino : MonoBehaviour
 {
     private int motorCount = 16;
     private byte[] setZero;
-    public static string deviceIP = "192.168.50.20";
+    // public static string deviceIP = "192.168.50.20";
+    public static string deviceIP = "192.168.4.1";
     public static int devicePort = 80;
     private Socket socket;
     public bool arduinoPaused = true;
     public bool showString = false;
 
-    private VirtualLayer virtualLayer;
 
     // Start is called before the first frame update
     void Start()
     {
-        virtualLayer = gameObject.GetComponent<VirtualLayer>();
-
         arduinoPaused = true;
         setZero = new byte[motorCount];
         for(int i = 0; i< motorCount; i++)
@@ -35,7 +33,6 @@ public class WifiToArduino : MonoBehaviour
             Debug.Log("Connection established!");
             socket.NoDelay = true;
             arduinoPaused = false;
-            virtualLayer.StartMonitor();
         }
     }
 
@@ -64,11 +61,28 @@ public class WifiToArduino : MonoBehaviour
     {
         if (showString && !arduinoPaused)
         {
-            Debug.Log("Send to arduino: " + input[0].ToString() + " " + input[1].ToString() + " ... " + input[motorCount-1].ToString());
+            Debug.Log("Send to arduino: " + input[0].ToString() + " " 
+                + input[1].ToString() + " "
+                + input[2].ToString() + " "
+                + input[3].ToString() + " "
+                + input[4].ToString() + " "
+                + input[5].ToString() + " "
+                + input[6].ToString() + " "
+                + input[7].ToString() + " "
+                + input[8].ToString() + " "
+                + input[9].ToString() + " "
+                + input[10].ToString() + " "
+                + input[11].ToString() + " "
+                + input[12].ToString() + " "
+                + input[13].ToString() + " "
+                + input[14].ToString() + " "
+                + input[15].ToString());
         }
         if (socket.Connected && !arduinoPaused)
         {
-            socket.Send(input);
+            // socket.Send(input);
+            System.ArraySegment<byte> data = new System.ArraySegment<byte>(input);
+            socket.SendAsync(data, SocketFlags.None);
         }
     }
 
@@ -76,9 +90,13 @@ public class WifiToArduino : MonoBehaviour
     {
         if (socket.Connected)
         {
-            Debug.Log("Close connection.");
+            Debug.Log("Close current connection.");
             socket.Close();
             arduinoPaused = true;
+        }
+        else
+        {
+            Debug.Log("No connection right now.");
         }
         socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         Debug.Log("Establishing Connection to " + deviceIP);

@@ -770,7 +770,6 @@ GameObject:
   - component: {fileID: 949571533}
   - component: {fileID: 949571537}
   - component: {fileID: 949571540}
-  - component: {fileID: 949571541}
   - component: {fileID: 949571535}
   - component: {fileID: 949571534}
   - component: {fileID: 949571536}
@@ -875,7 +874,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lowSusVibration: 0
   intensityMappingEnable: 1
-  frequencyMappingEnable: 0
   defaultTactileMotionEnable: 0
   frequencyParameter: 2
   MotionPatternType: 3
@@ -927,12 +925,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 958fff7e320639d4396a7a7bd48d096a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  useWifi: 1
   calibrationFilePath: D:\MotionBand-Study(final0827)\calibrationResults\
   fileName: currentRecord.txt
-  vibrationRecordPath: D:\MotionBand-Study(final0827)\vibrationRecord\
   isRandom: 0
   UserID: 999
-  VibratorFrequencies: 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
   VibratorIntensities: 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
   VibratorMotionIntensities: 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
   VibratorAdditionalIntensities: 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
@@ -973,9 +970,6 @@ MonoBehaviour:
   - 0
   maxValue: 80
   isMotion: 0
-  defaultFreq: 170
-  minFreq: 170
-  maxFreq: 170
   updateInterval: 0.02
 --- !u!114 &949571539
 MonoBehaviour:
@@ -1055,25 +1049,6 @@ MonoBehaviour:
   - 0
   - 0
   - 0
---- !u!114 &949571541
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 949571532}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 52605f197a9fb824cb5f474ad104cb8c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  vibratorSwitchInterval: 0.2
-  vibratorSwitchTimer: 0
-  parameterSwitchInterval: 2
-  parameterSwitchTimer: 0
-  noiseSampleInterval: 0.2
-  noiseSampleTimer: 0
-  whiteNoise: 0
 --- !u!1 &956803901
 GameObject:
   m_ObjectHideFlags: 0

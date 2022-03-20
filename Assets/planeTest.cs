@@ -23,10 +23,6 @@ public class planeTest : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        for (int i = 0; i < 4; i++)
-        {
-            suspension[i] = gameObject.GetComponent<ACListener>().suspension[i];
-        }
 
         backRightWheel = new Vector3(carWidth / 2, suspension[0] * scaleFactor, -carLength / 2);
         backLeftWheel = new Vector3(-carWidth / 2, suspension[1] * scaleFactor, -carLength / 2);

@@ -31,7 +31,6 @@ public class randomVibration : MonoBehaviour
             isChosen[i] = false;
         }
         GetComponent<PatternGenerator>().intensityMappingEnable = false;
-        GetComponent<PatternGenerator>().frequencyMappingEnable = false;
         GetComponent<additionalIntensityGenerator>().feedbackEnable = false;
 
     }
@@ -75,9 +74,7 @@ public class randomVibration : MonoBehaviour
             {
                 if (isChosen[i])
                 {
-                    frequency = Random.Range(0, 100);
                     intensity = Random.Range(0, 100);
-                    virtualHeadband.VibratorFrequencies[i] = frequency;
                     virtualHeadband.VibratorIntensities[i] = intensity;
                 }
             }
