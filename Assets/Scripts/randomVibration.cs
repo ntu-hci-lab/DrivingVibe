@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/*
 public class randomVibration : MonoBehaviour
 {
     private int numOfVibrators;
@@ -120,3 +121,4 @@ public class randomVibration : MonoBehaviour
         return (mu + sigma * n);
     }
 }
+*/

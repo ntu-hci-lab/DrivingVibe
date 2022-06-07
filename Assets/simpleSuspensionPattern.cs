@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using AirDriVR;
 
+//should be discarded
+/*
 public class simpleSuspensionPattern : MonoBehaviour
 {
     public bool lowSusVibration;
@@ -169,3 +171,4 @@ public class simpleSuspensionPattern : MonoBehaviour
     }
 
 }
+*/

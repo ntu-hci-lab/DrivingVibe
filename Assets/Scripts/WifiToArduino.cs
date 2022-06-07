@@ -14,11 +14,13 @@ public class WifiToArduino : MonoBehaviour
     private Socket socket;
     public bool arduinoPaused = true;
     public bool showString = false;
+    private VibrationRecorder recorder;
 
 
     // Start is called before the first frame update
     void Start()
     {
+        recorder = GetComponent<VibrationRecorder>();
         arduinoPaused = true;
         setZero = new byte[motorCount];
         for(int i = 0; i< motorCount; i++)
@@ -59,6 +61,7 @@ public class WifiToArduino : MonoBehaviour
 
     public void writeToArduinoByte(byte[] input)
     {
+
         if (showString && !arduinoPaused)
         {
             Debug.Log("Send to arduino: " + input[0].ToString() + " " 
@@ -80,6 +83,10 @@ public class WifiToArduino : MonoBehaviour
         }
         if (socket.Connected && !arduinoPaused)
         {
+            if (recorder != null)
+            {
+                recorder.vibrationData = input;
+            }
             // socket.Send(input);
             System.ArraySegment<byte> data = new System.ArraySegment<byte>(input);
             socket.SendAsync(data, SocketFlags.None);

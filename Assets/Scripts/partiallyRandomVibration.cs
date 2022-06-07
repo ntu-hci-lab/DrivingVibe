@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using AirDriVR;
 
+//should be discarded
+/*
 public class partiallyRandomVibration : MonoBehaviour
 {
     [Header("pattern choice")]
@@ -548,3 +550,4 @@ public class partiallyRandomVibration : MonoBehaviour
         yield break;
     }
 }
+*/

@@ -39,14 +39,33 @@ namespace AirDriVR
 
         private bool isConnecting = false;
 
-        public Vector2 Gforce;
+        
+        [HideInInspector]
+        public float[] pos = new float[4];
+        [HideInInspector]
         public float velocity;
-
+        [HideInInspector]
+        public Vector2 Gforce;
+        [HideInInspector]
+        public float G_vertical;
+        [HideInInspector]
+        public float gas;
+        [HideInInspector]
+        public float brake;
+        private float lastRPM;
+        [HideInInspector]
+        public float RPM;
+        [HideInInspector]
+        public bool IsRpmRising;
+        [HideInInspector]
+        public int gear;
         private float myTimeStamp;
         private int lastRecordTime = 0;
         private float[] lastSuspension = new float[4];
         private float[] newSuspension = new float[4];
+        [HideInInspector]
         public float[] suspensionDiff = new float[4];
+        [HideInInspector]
         public float carSlope;
 
         private void Start()
@@ -138,15 +157,12 @@ namespace AirDriVR
                 /*
                 lock (infoLock)
                 {
-                    
                     airDriVrTestController.SetGForce(
                         info.accG_horizontal * horizontalMultipler, 
                         -info.accG_frontal * longitudinalMultiplier);
-                    
-                    
                 }
                 */
-                RecordParameters();
+                ProcessParameters();
                 yield return 0;
                 // Debug.Log("In while loop! ");
             }
@@ -186,19 +202,36 @@ namespace AirDriVR
                 logStreamWriter?.Dispose();
             }
         }
-        private void RecordParameters()
+        private void ProcessParameters()
         {
             infoText.text = info.ToString();
-            if (info.accG_frontal < 0)
+            pos = info.carCoordinates; // new Vector3(info.carCoordinates[0], info.carCoordinates[1], info.carCoordinates[2]); 
+            velocity = info.speed_Ms;
+            if (info.accG_frontal > 0)
             {
-                Gforce = new Vector2(info.accG_horizontal * accReduceFactor, info.accG_frontal);
+                Gforce = new Vector2(info.accG_horizontal, info.accG_frontal * accReduceFactor);
             }
             else
             {
                 Gforce = new Vector2(info.accG_horizontal, info.accG_frontal);
             }
+            G_vertical = info.accG_vertical;
 
-            if(lastRecordTime < info.lapTime)
+            gas = info.gas;
+            brake = info.brake;
+            RPM = info.engineRPM;
+            if (RPM - lastRPM > 0.1f)
+            {
+                IsRpmRising = true;
+            }
+            else if (RPM - lastRPM < -0.1f)
+            {
+                IsRpmRising = false;
+            }
+            lastRPM = RPM;
+            gear = info.gear;
+
+            if (lastRecordTime < info.lapTime)
             {
                 if (info.suspensionHeight != null)
                 {
@@ -216,7 +249,6 @@ namespace AirDriVR
             {
                 lastRecordTime = info.lapTime;
             }
-            velocity = info.speed_Ms;
             carSlope = info.carSlope;
         }
     }

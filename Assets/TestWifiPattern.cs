@@ -5,7 +5,6 @@ using UnityEngine;
 public class TestWifiPattern : MonoBehaviour
 {
     private WifiToArduino wifi;
-    private VirtualLayer virtualLayer;
     private int[] VibratorIntensities = new int[16];
     public float interval = 1.0f;
     public int intensity = 20;
@@ -20,8 +19,8 @@ public class TestWifiPattern : MonoBehaviour
     void Start()
     {
         wifi = gameObject.GetComponent<WifiToArduino>();
-        virtualLayer = gameObject.GetComponent<VirtualLayer>();
-        VibratorIntensities = virtualLayer.VibratorIntensities;
+        //virtualLayer = gameObject.GetComponent<VirtualLayer>();
+        //VibratorIntensities = virtualLayer.VibratorIntensities;
     }
 
     // Update is called once per frame
@@ -46,7 +45,7 @@ public class TestWifiPattern : MonoBehaviour
         {
             StopAllCoroutines();
             //wifi.setAllToZero();
-            virtualLayer.setAllToZero();
+            //virtualLayer.setAllToZero();
         }
     }
 
