@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
+using System;
 using System.Net;
 using System.Net.Sockets;
 
@@ -27,15 +29,7 @@ public class WifiToArduino : MonoBehaviour
         {
             setZero[i] = System.Convert.ToByte((char)0);
         }
-        socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-        Debug.Log("Establishing Connection to " + deviceIP);
-        socket.Connect(deviceIP, devicePort);
-        if (socket.Connected)
-        {
-            Debug.Log("Connection established!");
-            socket.NoDelay = true;
-            arduinoPaused = false;
-        }
+        StartConnection();
     }
 
     private void Update()
@@ -93,6 +87,29 @@ public class WifiToArduino : MonoBehaviour
         }
     }
 
+    public void StartConnection()
+    {
+        socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+        Debug.Log("Establishing Connection to " + deviceIP);
+        //socket.Connect(deviceIP, devicePort);
+
+        IAsyncResult result = socket.BeginConnect(deviceIP, devicePort, null, null);
+
+        bool success = result.AsyncWaitHandle.WaitOne(3000, true);
+
+        if (socket.Connected)
+        {
+            Debug.Log("Connection established!");
+            socket.NoDelay = true;
+            arduinoPaused = false;
+        }
+        else
+        {
+            Debug.Log("Connection timeout!");
+            socket.Close();
+        }
+    }
+
     public void ReOpen()
     {
         if (socket.Connected)
@@ -105,15 +122,7 @@ public class WifiToArduino : MonoBehaviour
         {
             Debug.Log("No connection right now.");
         }
-        socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-        Debug.Log("Establishing Connection to " + deviceIP);
-        socket.Connect(deviceIP, devicePort);
-        if (socket.Connected)
-        {
-            Debug.Log("Connection established!");
-            socket.NoDelay = true;
-            arduinoPaused = false;
-        }
+        StartConnection();
     }
 
     public void setAllToZero()
@@ -136,6 +145,20 @@ public class WifiToArduino : MonoBehaviour
             setAllToZero();
             Debug.Log("Close connection.");
             socket.Close();
+        }
+    }
+}
+[CustomEditor(typeof(WifiToArduino))]
+public class ReconnectBtn : Editor
+{
+    public override void OnInspectorGUI()
+    {
+        base.OnInspectorGUI();
+        WifiToArduino wifiToArduino = (WifiToArduino)target;
+
+        if (GUILayout.Button("Reconnect"))
+        {
+            wifiToArduino.ReOpen();
         }
     }
 }

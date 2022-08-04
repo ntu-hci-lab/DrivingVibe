@@ -172,7 +172,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 1bbc4b1fe1af87746a1db886d28c7ad1, type: 2}
+  - {fileID: 2100000, guid: 3d6d1c527fe529c4b8eb8fe9112a8316, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -209,8 +209,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 29432687}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -50, z: 0}
-  m_LocalScale: {x: 300, y: 1, z: 300}
+  m_LocalPosition: {x: -52, y: -50, z: -3}
+  m_LocalScale: {x: 149.06, y: 0.95056, z: 64.6}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 4
@@ -403,13 +403,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb7c97c75ff6e004997ffab03a9a652a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  RecordDir: D:\vibrateRecords\profile1
-  fileCount: 3
+  RecordDir: D:\vibrateRecords\profile_shake_ver0
+  fileCount: 1
   token: {fileID: 1610484112}
   resolutionInTime: 0.3
   SphereHolder: {fileID: 1226177113}
-  renderingLength: 160
-  tokenSize: 20
+  renderingLength: 50
+  tokenSize: 10
   coloringMethod: 0
   coloringUpperBound: 80
   coloringLowerBound: 0
@@ -493,7 +493,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 400
   shiftSpeed: 100
-  showInstructions: 1
+  showInstructions: 0
 --- !u!20 &1120452010
 Camera:
   m_ObjectHideFlags: 0
@@ -696,10 +696,6 @@ MonoBehaviour:
   _acc_frontal: 0
   _acc_horizontal: 0
   _acc_vertical: 0
-  _gas: 0
-  _brake: 0
-  _engineRPM: 0
-  _gear: 0
   _suspensionDiff:
   - 0
   - 0
@@ -1506,7 +1502,7 @@ RectTransform:
   m_GameObject: {fileID: 6591194243982383057}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.6, y: 0.6, z: 0.6}
   m_Children:
   - {fileID: 6591194242814139194}
   m_Father: {fileID: 6591194244215179661}
@@ -1514,7 +1510,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 345, y: -144}
+  m_AnchoredPosition: {x: 442, y: -317}
   m_SizeDelta: {x: 220, y: 220}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &6591194243982383071

@@ -31,7 +31,9 @@ public class PositionCopier : MonoBehaviour
         Acc_horizontal,
         EngineRPM,
         isTactileMotionOngoing,
+        SuspensionVelo,
         CueIntensity,
+        ShakeIntensity,
         SumIntensity
     };
     private float _timeStamp;
@@ -53,10 +55,10 @@ public class PositionCopier : MonoBehaviour
 
     public void UpdateTokenColor()
     {
-        int count = SphereHolder.childCount;
+        int SphereCount = SphereHolder.childCount;
         float parameter;
         GameObject sphere;
-        for (int i = 0; i < count; i++)
+        for (int i = 0; i < SphereCount; i++)
         {
             sphere = SphereHolder.GetChild(i).gameObject;
 
@@ -73,13 +75,21 @@ public class PositionCopier : MonoBehaviour
                 case ColoringMethod.Acc_horizontal:
                     parameter = sphere.GetComponent<ParameterHolder>()._acc_horizontal;
                     break;
+                /*
                 case ColoringMethod.EngineRPM:
                     parameter = sphere.GetComponent<ParameterHolder>()._engineRPM;
                     break;
+                */
+
                 case ColoringMethod.isTactileMotionOngoing:
                     parameter = sphere.GetComponent<ParameterHolder>()._isTactileMotionOngoing;
                     //coloringLowerBound = 0.0f;
                     //coloringUpperBound = 1.0f;
+                    break;
+                case ColoringMethod.SuspensionVelo:
+                    parameter = sphere.GetComponent<ParameterHolder>()._suspensionDiff[0];
+                    //coloringLowerBound = 0.0f;
+                    //coloringUpperBound = 0.4f;
                     break;
                 case ColoringMethod.CueIntensity:
                     parameter = 0;
@@ -89,6 +99,15 @@ public class PositionCopier : MonoBehaviour
                     }
                     //coloringLowerBound = 0.0f;
                     //coloringUpperBound = 1600.0f;
+                    break;
+                case ColoringMethod.ShakeIntensity:
+                    parameter = 0;
+                    for (int j = 0; j < 16; j++)
+                    {
+                        parameter += sphere.GetComponent<ParameterHolder>()._RoadShakeIntensity[j];
+                    }
+                    //coloringLowerBound = 0.0f;
+                    //coloringUpperBound = 1200.0f;
                     break;
                 case ColoringMethod.SumIntensity:
                     parameter = 0;
@@ -155,12 +174,11 @@ public class PositionCopier : MonoBehaviour
         private float _acc_frontal;
         private float _acc_horizontal;
         private float _acc_vertical;
-        private float _gas;
-        private float _brake;
-        private float _engineRPM;
-        private float _gear;
         private float[] _suspensionDiff = new float[4];
-        private int[] _outputVibrationIntensity = new int[16];
+        private int _isTactileMotionOngoing;
+        private int[] _directionalCueIntensity = new int[16];
+        private int[] _RoadShakeIntensity = new int[16];
+        private int[] _SumIntensity = new int[16];
         */
         string[] data = line.Split(',');
 
@@ -173,7 +191,7 @@ public class PositionCopier : MonoBehaviour
         {
             _timeStamp = dataTimeStamp;
             // sufficient time skip, make a sphere with data in it
-            Vector3 pos = new Vector3(float.Parse(data[1]), float.Parse(data[2]), float.Parse(data[3]));
+            Vector3 pos = new Vector3(float.Parse(data[1]), -50.0f, float.Parse(data[3]));
             GameObject currentToken = Instantiate(token, pos, Quaternion.identity, SphereHolder);
             tokenList.Add(currentToken);
             currentToken.transform.localScale = new Vector3(tokenSize, tokenSize, tokenSize);
@@ -188,23 +206,19 @@ public class PositionCopier : MonoBehaviour
             parameterHolder._acc_frontal = float.Parse(data[5]);
             parameterHolder._acc_horizontal = float.Parse(data[6]);
             parameterHolder._acc_vertical = float.Parse(data[7]);
-            parameterHolder._gas = float.Parse(data[8]);
-            parameterHolder._brake = float.Parse(data[9]);
-            parameterHolder._engineRPM = float.Parse(data[10]);
-            parameterHolder._gear = int.Parse(data[11]);
-            parameterHolder._suspensionDiff[0] = float.Parse(data[12]);
-            parameterHolder._suspensionDiff[1] = float.Parse(data[13]);
-            parameterHolder._suspensionDiff[2] = float.Parse(data[14]);
-            parameterHolder._suspensionDiff[3] = float.Parse(data[15]);
-            parameterHolder._isTactileMotionOngoing = int.Parse(data[16]);
+            parameterHolder._suspensionDiff[0] = float.Parse(data[8]);
+            parameterHolder._suspensionDiff[1] = float.Parse(data[9]);
+            parameterHolder._suspensionDiff[2] = float.Parse(data[10]);
+            parameterHolder._suspensionDiff[3] = float.Parse(data[11]);
+            parameterHolder._isTactileMotionOngoing = int.Parse(data[12]);
             for(int i = 0; i < 16; i++)
             {
-                // data[17] ~ data[32]
-                parameterHolder._directionalCueIntensity[i] = int.Parse(data[i + 17]);
-                // data[33] ~ data[48]
-                parameterHolder._RoadShakeIntensity[i] = int.Parse(data[i + 33]);
-                // data[49] ~ data[64]
-                parameterHolder._SumIntensity[i] = int.Parse(data[i + 49]);
+                // data[13] ~ data[28]
+                parameterHolder._directionalCueIntensity[i] = int.Parse(data[i + 13]);
+                // data[29] ~ data[44]
+                parameterHolder._RoadShakeIntensity[i] = int.Parse(data[i + 29]);
+                // data[45] ~ data[60]
+                parameterHolder._SumIntensity[i] = int.Parse(data[i + 45]);
             }
         }
     }

@@ -6,9 +6,14 @@ using System.Text;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.XInput;
 
 public class CalibrationTest : MonoBehaviour
 {
+
+    public XInputController gamepad;
+
     public string RecordDir = "./record";
     public string RecordName = "test";
     public string CurrentRecordName = "currentRecord";
@@ -26,7 +31,9 @@ public class CalibrationTest : MonoBehaviour
     private Button saveBtn;
     private Text targetPath;
     private Text stageText;
-    private int[] weighting = new int[16];
+    private int[] singleWeighting = new int[16];
+    private int[] singleWeighting2 = new int[16];
+    private int[] sectionWeighting = new int[4];
     private int globalMultiplier = 100;
     private byte[] data = new byte[16];
     private bool isStarted = false;
@@ -56,6 +63,7 @@ public class CalibrationTest : MonoBehaviour
 
     private void Start()
     {
+        gamepad = Gamepad.all[0] as XInputController;
         try
         {
             if (!Directory.Exists(RecordDir))
@@ -127,28 +135,30 @@ public class CalibrationTest : MonoBehaviour
                 }
                 phaseCtrl1 = ++phaseCtrl1 % 4;
             }
-            if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow))
+
+            if (gamepad.dpad.up.wasPressedThisFrame)
             {
-                if (testIntensity < 40)
+                if (testIntensity < 30)
                 {
                     testIntensity += 2;
                 }
-                weighting[testCase] = (int)(testIntensity * 100 / baseIntensity);
+                singleWeighting[testCase] = (int)(testIntensity * 100 / baseIntensity);
             }
-            if (Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow))
+            else if (gamepad.dpad.down.wasPressedThisFrame)
             {
                 if (testIntensity > 2)
                 {
                     testIntensity -= 2;
                 }
-                weighting[testCase] = (int)(testIntensity * 100 / baseIntensity);
+                singleWeighting[testCase] = (int)(testIntensity * 100 / baseIntensity);
             }
-            if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
+
+            if (gamepad.dpad.right.wasPressedThisFrame || gamepad.rightShoulder.wasPressedThisFrame || gamepad.rightTrigger.wasPressedThisFrame)
             {
                 if (testCase < 15)
                 {
                     ++testCase;
-                    testIntensity = (int)(baseIntensity * weighting[testCase] / 100);
+                    testIntensity = (int)(baseIntensity * singleWeighting[testCase] / 100);
                     GameObject.Find("Tag").GetComponent<RectTransform>().anchoredPosition
                            = GameObject.Find(Motor[testCase].name).GetComponent<RectTransform>().anchoredPosition;
                 }
@@ -156,17 +166,17 @@ public class CalibrationTest : MonoBehaviour
                 {
                     GameObject.Find("Tag").GetComponent<RawImage>().color = Color.clear;
                     stage = 2;
-                    stage2TestCase = 0;
-                    testIntensity = 100;
+                    stage2TestCase = 4;
+                    testIntensity = (int)(baseIntensity * sectionWeighting[1] / 100);
                     //stageText.text = "increase to most bearable intensity";
                 }
             }
-            if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
+            else if (gamepad.dpad.left.wasPressedThisFrame || gamepad.leftShoulder.wasPressedThisFrame || gamepad.leftTrigger.wasPressedThisFrame)
             {
                 if (testCase > 1)
                 {
                     --testCase;
-                    testIntensity = (int)(baseIntensity * weighting[testCase] / 100);
+                    testIntensity = (int)(baseIntensity * singleWeighting[testCase] / 100);
                     GameObject.Find("Tag").GetComponent<RectTransform>().anchoredPosition
                            = GameObject.Find(Motor[testCase].name).GetComponent<RectTransform>().anchoredPosition;
                 }
@@ -176,26 +186,49 @@ public class CalibrationTest : MonoBehaviour
         else if (stage == 2)
         {
             //show.text = ((int)(testIntensity * 100 / baseIntensity)).ToString() + "%";
-            show.text = "revalidation";
+            show.text = ((int)(testIntensity * 100 / baseIntensity)).ToString() + "%";
             if (worker == 0)
             {
                 if (phaseCtrl1 == 0)
                 {
-                    StartCoroutine(doFourVibrations(baseIntensity, duration, stage2TestCase));
+                    StartCoroutine(doSectionVibrations(baseIntensity, duration, 0));
+                }
+                else if (phaseCtrl1 == 2)
+                {
+                    StartCoroutine(doSectionVibrations(baseIntensity, duration, stage2TestCase));
                 }
                 else
                 {
                     StartCoroutine(waiting(duration));
                 }
-                phaseCtrl1 = ++phaseCtrl1 % 2;
+                phaseCtrl1 = ++phaseCtrl1 % 4;
             }
-            
-            if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
+
+            if (gamepad.dpad.up.wasPressedThisFrame)
+            {
+                if (testIntensity < 30)
+                {
+                    testIntensity += 2;
+                }
+                sectionWeighting[stage2TestCase / 4] = (int)(testIntensity * 100 / baseIntensity);
+                UpdateSingleWeighting2();
+            }
+            else if (gamepad.dpad.down.wasPressedThisFrame)
+            {
+                if (testIntensity > 2)
+                {
+                    testIntensity -= 2;
+                }
+                sectionWeighting[stage2TestCase / 4] = (int)(testIntensity * 100 / baseIntensity);
+                UpdateSingleWeighting2();
+            }
+
+            if (gamepad.dpad.right.wasPressedThisFrame || gamepad.rightShoulder.wasPressedThisFrame || gamepad.rightTrigger.wasPressedThisFrame)
             {
                 if (stage2TestCase < 12)
                 {
                     stage2TestCase += 4;
-                    // testIntensity = (int)(baseIntensity * weighting[testCase] / 100);
+                    testIntensity = (int)(baseIntensity * sectionWeighting[stage2TestCase / 4] / 100);
                 }
                 else
                 {
@@ -205,17 +238,18 @@ public class CalibrationTest : MonoBehaviour
                     
                 }
             }
-            if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
+            else if (gamepad.dpad.left.wasPressedThisFrame || gamepad.leftShoulder.wasPressedThisFrame || gamepad.leftTrigger.wasPressedThisFrame)
             {
-                if (testCase > 0)
+                if (stage2TestCase > 4)
                 {
-                    testCase -= 4;
-                    // testIntensity = (int)(baseIntensity * weighting[testCase] / 100);
+                    stage2TestCase -= 4;
+                    testIntensity = (int)(baseIntensity * sectionWeighting[stage2TestCase / 4] / 100);
                 }
                 else
                 {
-                    testIntensity = baseIntensity;
+                    testIntensity = (int)(baseIntensity * singleWeighting[15] / 100);
                     stage = 1;
+                    //testCase = 15;
                 }
             }
         }
@@ -224,7 +258,7 @@ public class CalibrationTest : MonoBehaviour
         {
             show.text = testIntensity.ToString();
 
-            if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
+            if (gamepad.dpad.right.wasPressedThisFrame || gamepad.rightShoulder.wasPressedThisFrame || gamepad.rightTrigger.wasPressedThisFrame)
             {
                 // cut the current preview
                 if(currentPatternPreview != null)
@@ -235,7 +269,7 @@ public class CalibrationTest : MonoBehaviour
                 currentPatternPreview =  StartCoroutine(patternPreview(testIntensity));
             }
 
-            if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow))
+            if (gamepad.dpad.up.wasPressedThisFrame)
             {
                 if (testIntensity < 100)
                 {
@@ -251,7 +285,7 @@ public class CalibrationTest : MonoBehaviour
                 // play a new one
                 currentPatternPreview = StartCoroutine(patternPreview(testIntensity));
             }
-            if (Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow))
+            if (gamepad.dpad.down.wasPressedThisFrame)
             {
                 if (testIntensity > 80)
                 {
@@ -277,7 +311,7 @@ public class CalibrationTest : MonoBehaviour
         mutex.ReleaseMutex();
 
         //virtualHeadband.VibratorIntensities[index] = intensity * weighting[index] / 100;
-        data[index] = System.Convert.ToByte((char)(intensity * weighting[index] / 100));
+        data[index] = System.Convert.ToByte((char)(intensity * singleWeighting2[index] * singleWeighting[index] / 10000));
         arduino.writeToArduinoByte(data);
         Motor[index].color = Color.black;
 
@@ -294,7 +328,7 @@ public class CalibrationTest : MonoBehaviour
 
     private IEnumerator patternPreview(int multiplier)
     {
-        string path = Path.Combine(RecordDir, "VibrationForCalibration_v1.csv");
+        string path = Path.Combine(RecordDir, "VibrationForCalibration_v2.csv");
         FileInfo patternPreviewFile = new FileInfo(path);
         StreamReader reader = patternPreviewFile.OpenText();
         string line = reader.ReadLine();
@@ -314,7 +348,31 @@ public class CalibrationTest : MonoBehaviour
         yield break;
     }
 
-    private IEnumerator doFourVibrations(int intensity, float duration, int offset)
+    private void UpdateSingleWeighting2()
+    {
+        //section 0: 14,15,0,1,2
+        //section 1: 2,3,4,5,6
+        //section 2: 6,7,8,9,10
+        //section 3: 10,11,12,13,14
+        singleWeighting2[0] = sectionWeighting[0];
+        singleWeighting2[1] = sectionWeighting[0];
+        singleWeighting2[2] = (sectionWeighting[0] + sectionWeighting[1])/2;
+        singleWeighting2[3] = sectionWeighting[1];
+        singleWeighting2[4] = sectionWeighting[1];
+        singleWeighting2[5] = sectionWeighting[1];
+        singleWeighting2[6] = (sectionWeighting[1] + sectionWeighting[2]) / 2;
+        singleWeighting2[7] = sectionWeighting[2];
+        singleWeighting2[8] = sectionWeighting[2];
+        singleWeighting2[9] = sectionWeighting[2];
+        singleWeighting2[10] = (sectionWeighting[2] + sectionWeighting[3]) / 2;
+        singleWeighting2[11] = sectionWeighting[3];
+        singleWeighting2[12] = sectionWeighting[3];
+        singleWeighting2[13] = sectionWeighting[3];
+        singleWeighting2[14] = (sectionWeighting[3] + sectionWeighting[0]) / 2;
+        singleWeighting2[15] = sectionWeighting[3];
+    }
+
+    private IEnumerator doSectionVibrations(int intensity, float duration, int offset)
     {
 
         mutex.WaitOne();
@@ -327,11 +385,12 @@ public class CalibrationTest : MonoBehaviour
         {
             data[i] = System.Convert.ToByte((char)0);
         }
-        for(int i = offset; i < 4 + offset; i++)
+        for(int i = offset - 2; i <= offset + 2; i++)
         {
-            intTmp = Mathf.Min(40, (intensity * weighting[i] / 100));
-            data[i] = System.Convert.ToByte((char)(intTmp));
-            Motor[i].color = Color.black;
+            int index = (i + 16) % 16;
+            intTmp = Mathf.Min(40, (intensity * singleWeighting2[index] * singleWeighting[index] / 10000));
+            data[index] = System.Convert.ToByte((char)(intTmp));
+            Motor[index].color = Color.black;
         }
         arduino.writeToArduinoByte(data);
 
@@ -374,8 +433,13 @@ public class CalibrationTest : MonoBehaviour
         testIntensity = baseIntensity;
         for (int i = 0; i < 16; i++)
         {
-            weighting[i] = 100;
+            singleWeighting[i] = 100;
+            singleWeighting2[i] = 100;
             data[i] = System.Convert.ToByte((char)0);
+        }
+        for (int i = 0; i < 4; i++)
+        {
+            sectionWeighting[i] = 100;
         }
         stageText.text = "";
         GameObject.Find("Tag").GetComponent<RectTransform>().anchoredPosition = GameObject.Find("M1").GetComponent<RectTransform>().anchoredPosition;
@@ -383,13 +447,18 @@ public class CalibrationTest : MonoBehaviour
 
     private void saveRecord()
     {
+        int[] finalWeighting = new int[16];
+        for(int i = 0; i < 16; i++)
+        {
+            finalWeighting[i] = singleWeighting[i] * singleWeighting2[i];
+        }
         try
         {
             StreamWriter sw = new StreamWriter(RecordPath, false, Encoding.ASCII);
-            var maxValue = findMaxInt(weighting, 16);
+            var maxValue = findMaxInt(finalWeighting, 16);
             for (int k = 0; k < 16; ++k)  //with motor 0
             {
-                sw.WriteLine(Mathf.Floor(100 * weighting[k] / maxValue).ToString());
+                sw.WriteLine(Mathf.Floor(100 * finalWeighting[k] / maxValue).ToString());
             }
             sw.WriteLine(globalMultiplier.ToString());
             
@@ -428,7 +497,7 @@ public class CalibrationTest : MonoBehaviour
         string[] VibrationRecords = line.Split(',');
         for(int i = 0; i < 16; i++)
         {
-            int intTmp = int.Parse(VibrationRecords[i]) * multi * weighting[i] / 100 / 100;
+            int intTmp = int.Parse(VibrationRecords[i]) * multi * singleWeighting[i] / 100 / 100;
             intTmp = Mathf.Min(intTmp, 40);
             data[i] = System.Convert.ToByte((char)(intTmp));
         }

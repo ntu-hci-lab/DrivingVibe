@@ -770,7 +770,6 @@ GameObject:
   - component: {fileID: 949571533}
   - component: {fileID: 949571538}
   - component: {fileID: 949571537}
-  - component: {fileID: 949571540}
   - component: {fileID: 949571535}
   - component: {fileID: 949571534}
   - component: {fileID: 949571543}
@@ -778,6 +777,7 @@ GameObject:
   - component: {fileID: 949571541}
   - component: {fileID: 949571539}
   - component: {fileID: 949571536}
+  - component: {fileID: 949571540}
   m_Layer: 5
   m_Name: AClistener
   m_TagString: Untagged
@@ -834,16 +834,28 @@ MonoBehaviour:
   Gforce: {x: 0, y: 0}
   G_vertical: 0
   gas: 0
-  brake: 0
-  RPM: 0
-  IsRpmRising: 0
-  gear: 0
+  lastRecordTime: 0
+  bufferSize: 6
+  newSuspension:
+  - 0
+  - 0
+  - 0
+  - 0
+  unBufferedNewSuspension:
+  - 0
+  - 0
+  - 0
+  - 0
   suspensionDiff:
   - 0
   - 0
   - 0
   - 0
-  carSlope: 0
+  unBufferedSuspensionDiff:
+  - 0
+  - 0
+  - 0
+  - 0
 --- !u!114 &949571535
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -867,13 +879,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 949571532}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 88bec44cb3e12484abb89caed2e11d91, type: 3}
+  m_Script: {fileID: 11500000, guid: b1c76e9b392a02f4583b08b57bb7113f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  FilePath: D:\vibrateRecords\
-  recordLength: 170
-  recordMinutes: 0
-  recordCount: 0
+  left: 0
+  right: 0
+  headband: 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 --- !u!114 &949571537
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -887,20 +898,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   GforcePatternEnable: 1
-  RoadShakeEnable: 1
+  RoadShakeVer2Enable: 1
   MotionPatternType: 3
   DecelPatternType: 1
-  AccelPatternType: 4
+  AccelPatternType: 1
   TurnPatternType: 1
+  currentRegion: 0
   accAngleRange: 45
   decAngleRange: 45
-  GforceMinThreshold: 0.4
-  GforceMaxThreshold: 1.5
-  currentRegion: 0
+  GforceMinThreshold: 0.1
+  GforceMaxThreshold: 1.3
   duration: 0.15
   ISOI: 0.1
-  minISOI: 0.06
-  maxISOI: 0.08
+  minISOI: 0.05
+  maxISOI: 0.05
   DurationOverlapByMotor: 3
   MotionIntervalByMotor: 8
   MotionOnlyWhenHighVelocity: 1
@@ -910,9 +921,9 @@ MonoBehaviour:
   maxMotionIntensity: 20
   speedMinThreshold: 0
   speedMaxThreshold: 50
-  maxAddiIntensity: 50
-  TyreSpeedMinThreshold: 0.1
-  TyreSpeedMaxThreshold: 1.5
+  maxRoadShakeIntensity: 100
+  TyreSpeedMinThreshold: 0.02
+  TyreSpeedMaxThreshold: 0.4
   suspensionDiff:
   - 0
   - 0
@@ -922,6 +933,8 @@ MonoBehaviour:
   GearShiftIntensity: 30
   RPMappingToMotion: 0
   RPMThreshold: 7500
+  startMotionEnable: 1
+  lowSpeedThreshold: 5
   planarGforce: {x: 0, y: 0}
   Gforce: {x: 0, y: 0, z: 0}
   planarGforceMagnitude: 0
@@ -978,8 +991,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   UserID: J
-  isStaticCondition: 0
-  virtualHeadband: {fileID: 949571542}
+  WhichTask: 4
+  WhichCondition: 2
+  encoder: {fileID: 949571542}
+  virtualHeadband: {fileID: 949571541}
 --- !u!114 &949571539
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1026,21 +1041,11 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 949571532}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0a964ffd217eeec44a4ff6e09e511e61, type: 3}
+  m_Script: {fileID: 11500000, guid: cec5c15a4672b45419efcb3f296a6e27, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  feedbackEnable: 1
-  minThreshold: 0.1
-  maxThreshold: 1.5
-  duration: 0.1
-  diffAmplifyFactor: 100
-  suspensionDiff:
-  - 0
-  - 0
-  - 0
-  - 0
 --- !u!114 &949571541
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1053,6 +1058,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55021a0686da0444d88b10a6b8d21173, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isSync: 0
+  isPassive: 0
+  profileFilePath: D:\vibrateRecords\
+  profileFileName: Profile_minute0.csv
+  isControllerHaptic: 0
+  _gas: 0
   HeadbandIntensity: 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
   DirectionalCueIntensities: 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
   TactileMotionIntensities: 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
@@ -1088,16 +1099,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   useWifi: 1
   calibrationFilePath: ./record\
-  fileName: paul.txt
-  isRandom: 0
+  calibrationFileName: 0.txt
+  profileFilePath: D:\vibrateRecords\
+  profileFileName: Profile_minute0.csv
+  isPassive: 0
   UserID: 999
   VibratorIntensityWeight: 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
   minValue: 8
   maxValue: 40
   globalMultiplier: 100
   FramesPerUpdate: 1
-  isStaticCondition: 0
-  isEightMotorStatic: 0
 --- !u!114 &949571543
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -12,8 +12,10 @@ public class Encoder : MonoBehaviour
     private float MaximumForce = 2.3f;
     public bool useWifi = true;
     public string calibrationFilePath = @"D:\calibrationResults\";
-    public string fileName = "0.txt";
-    public bool isRandom;
+    public string calibrationFileName = "0.txt";
+    public string profileFilePath = @"D:\vibrateRecords\";
+    public string profileFileName = "Profile_minute0.csv";
+    public bool isPassive = false;
     public int UserID = 0;
 
     [SerializeField]
@@ -30,12 +32,10 @@ public class Encoder : MonoBehaviour
     public int FramesPerUpdate = 2;
 
     protected VirtualHeadband virtualHeadband;
-    protected ShowVibration showVibration;
 
     // Start is called before the first frame update
     protected virtual void Start()
     {
-        showVibration = GetComponent<ShowVibration>();
         virtualHeadband = GetComponent<VirtualHeadband>();
         Iniitialize();
         //StartCoroutine(sendHeadbandStateToArduino());
@@ -43,7 +43,7 @@ public class Encoder : MonoBehaviour
 
     void Iniitialize()
     {
-        FileInfo calibrationFile = new FileInfo(calibrationFilePath + fileName);
+        FileInfo calibrationFile = new FileInfo(calibrationFilePath + calibrationFileName);
         StreamReader reader = calibrationFile.OpenText();
         for (int i = 0; i < 16; i++)
         {

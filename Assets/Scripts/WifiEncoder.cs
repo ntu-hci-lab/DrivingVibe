@@ -7,8 +7,6 @@ using AirDriVR;
 
 public class WifiEncoder : Encoder
 {
-    public bool isStaticCondition;
-    public bool isEightMotorStatic;
     private WifiToArduino Arduino;
     private bool isMonitorOn = false;
     private byte[] WifiToArduinoBytes = new byte[16];
@@ -25,6 +23,7 @@ public class WifiEncoder : Encoder
             currentMonitor = StartCoroutine(sendHeadbandStateToArduino());
             isMonitorOn = true;
         }
+
     }
 
     private void Update()
@@ -75,37 +74,7 @@ public class WifiEncoder : Encoder
 
         if (!Arduino.arduinoPaused)
         {
-            if (isStaticCondition)
-            {
-                if (isEightMotorStatic)
-                {
-                    motorValue = Mathf.Min(Mathf.CeilToInt(sum / 8.0f), maxValue);
-                    for (int i = 0; i < 16; i++)
-                    {
-                        if (i % 2 == 0)
-                        {
-                            WifiToArduinoBytes[i] = System.Convert.ToByte((char)motorValue);
-                        }
-                        else
-                        {
-                            WifiToArduinoBytes[i] = System.Convert.ToByte((char)0);
-                        }
-                    }
-                }
-                else
-                {
-                    motorValue = Mathf.CeilToInt((float)sum / 16);
-                    for (int i = 0; i < 16; i++)
-                    {
-                        WifiToArduinoBytes[i] = System.Convert.ToByte((char)motorValue);
-                    }
-                }
-                Arduino.writeToArduinoByte(WifiToArduinoBytes);
-            }
-            else
-            {
-                Arduino.writeToArduinoByte(WifiToArduinoBytes);
-            }
+            Arduino.writeToArduinoByte(WifiToArduinoBytes);
         }
 
         // yield return new WaitForSeconds(updateInterval);

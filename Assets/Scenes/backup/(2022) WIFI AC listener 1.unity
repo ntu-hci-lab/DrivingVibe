@@ -770,7 +770,6 @@ GameObject:
   - component: {fileID: 949571533}
   - component: {fileID: 949571538}
   - component: {fileID: 949571537}
-  - component: {fileID: 949571540}
   - component: {fileID: 949571535}
   - component: {fileID: 949571534}
   - component: {fileID: 949571543}
@@ -834,16 +833,28 @@ MonoBehaviour:
   Gforce: {x: 0, y: 0}
   G_vertical: 0
   gas: 0
-  brake: 0
-  RPM: 0
-  IsRpmRising: 0
-  gear: 0
+  lastRecordTime: 0
+  bufferSize: 6
+  newSuspension:
+  - 0
+  - 0
+  - 0
+  - 0
+  unBufferedNewSuspension:
+  - 0
+  - 0
+  - 0
+  - 0
   suspensionDiff:
   - 0
   - 0
   - 0
   - 0
-  carSlope: 0
+  unBufferedSuspensionDiff:
+  - 0
+  - 0
+  - 0
+  - 0
 --- !u!114 &949571535
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -871,7 +882,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   FilePath: D:\vibrateRecords\
-  recordLength: 170
+  recordLength: 40
   recordMinutes: 0
   recordCount: 0
 --- !u!114 &949571537
@@ -887,20 +898,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   GforcePatternEnable: 1
-  RoadShakeEnable: 1
+  RoadShakeVer0Enable: 1
+  RoadShakeVer1Enable: 0
+  RoadShakeVer2Enable: 0
   MotionPatternType: 3
   DecelPatternType: 1
-  AccelPatternType: 4
+  AccelPatternType: 1
   TurnPatternType: 1
   accAngleRange: 45
   decAngleRange: 45
-  GforceMinThreshold: 0.4
+  GforceMinThreshold: 0.2
   GforceMaxThreshold: 1.5
   currentRegion: 0
   duration: 0.15
   ISOI: 0.1
-  minISOI: 0.06
-  maxISOI: 0.08
+  minISOI: 0.05
+  maxISOI: 0.05
   DurationOverlapByMotor: 3
   MotionIntervalByMotor: 8
   MotionOnlyWhenHighVelocity: 1
@@ -910,9 +923,10 @@ MonoBehaviour:
   maxMotionIntensity: 20
   speedMinThreshold: 0
   speedMaxThreshold: 50
-  maxAddiIntensity: 50
-  TyreSpeedMinThreshold: 0.1
-  TyreSpeedMaxThreshold: 1.5
+  maxRoadShakeIntensity: 50
+  TyreSpeedMinThreshold: 0.02
+  TyreSpeedMaxThreshold: 0.4
+  MinIntensityForVer2: 20
   suspensionDiff:
   - 0
   - 0
@@ -922,6 +936,8 @@ MonoBehaviour:
   GearShiftIntensity: 30
   RPMappingToMotion: 0
   RPMThreshold: 7500
+  startMotionEnable: 1
+  lowSpeedThreshold: 5
   planarGforce: {x: 0, y: 0}
   Gforce: {x: 0, y: 0, z: 0}
   planarGforceMagnitude: 0
@@ -977,7 +993,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0918b843c863bca45b3ae367242dbf58, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  UserID: J
+  UserID: test
   isStaticCondition: 0
   virtualHeadband: {fileID: 949571542}
 --- !u!114 &949571539
@@ -1019,28 +1035,6 @@ MonoBehaviour:
   frontLeft: {fileID: 1847304455}
   backRight: {fileID: 1614631409}
   backLeft: {fileID: 880438255}
---- !u!114 &949571540
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 949571532}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0a964ffd217eeec44a4ff6e09e511e61, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  feedbackEnable: 1
-  minThreshold: 0.1
-  maxThreshold: 1.5
-  duration: 0.1
-  diffAmplifyFactor: 100
-  suspensionDiff:
-  - 0
-  - 0
-  - 0
-  - 0
 --- !u!114 &949571541
 MonoBehaviour:
   m_ObjectHideFlags: 0

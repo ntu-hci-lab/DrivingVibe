@@ -8,7 +8,9 @@ public class PatternGenerator : MonoBehaviour
     [Header("pattern choice")]
     // turn off then no vibration
     public bool GforcePatternEnable = true;
-    public bool RoadShakeEnable = true;
+    //public bool RoadShakeVer0Enable = true;
+    //public bool RoadShakeVer1Enable = false;
+    public bool RoadShakeVer2Enable = false;
     public enum ParameterType
     {
         constant = 0,
@@ -30,14 +32,16 @@ public class PatternGenerator : MonoBehaviour
 
 
     [Header("Directional Cue related")]
-    // back
-    public float accAngleRange = 45.0f;
-    // front
-    public float decAngleRange = 45.0f;
-    public float GforceMinThreshold = 0.15f;
-    public float GforceMaxThreshold = 1.0f;
     public VibrationRegionType currentRegion = VibrationRegionType.none;
     private VibrationRegionType lastRegion = VibrationRegionType.none;
+    // back
+    [HideInInspector]
+    public float accAngleRange = 45.0f;
+    // front
+    [HideInInspector]
+    public float decAngleRange = 45.0f;
+    public float GforceMinThreshold = 0.1f;
+    public float GforceMaxThreshold = 1.3f;
     public enum VibrationRegionType
     {
         none = 0,
@@ -58,18 +62,23 @@ public class PatternGenerator : MonoBehaviour
     public float maxISOI = 0.06f;
     public float DurationOverlapByMotor = 4.0f;
     public float MotionIntervalByMotor = 5.0f;
+    [HideInInspector]
     public bool MotionOnlyWhenHighVelocity;
+    [HideInInspector]
     public float VelocityThresholdToMotion = 20.0f;
     public int fixMotionIntensity = 40;
     public bool VariableMotionIntensity;
+    [HideInInspector]
     public int maxMotionIntensity = 100;
+    [HideInInspector]
     public float speedMinThreshold = 0.0f;
+    [HideInInspector]
     public float speedMaxThreshold = 30.0f;
 
     [Header("Road Shake related")]
-    public float maxAddiIntensity = 50.0f;
-    public float TyreSpeedMinThreshold;
-    public float TyreSpeedMaxThreshold;
+    public float maxRoadShakeIntensity = 50.0f;
+    public float TyreSpeedMinThreshold = 0.02f;
+    public float TyreSpeedMaxThreshold = 0.4f;
     [HideInInspector]
     public float[] suspensionDiff = new float[4];
     // front right: 0 1 2 3 4
@@ -87,6 +96,8 @@ public class PatternGenerator : MonoBehaviour
     public int GearShiftIntensity = 40;
     public bool RPMappingToMotion = false;
     public float RPMThreshold  = 7000;
+    public bool startMotionEnable = false;
+    public float lowSpeedThreshold = 10.0f;
 
     [Header("Number Inspection")]
     //[HideInInspector]
@@ -161,7 +172,7 @@ public class PatternGenerator : MonoBehaviour
         planarGforceMagnitude = planarGforce.magnitude;
         GforceAngle = Vector2.SignedAngle(planarGforce, new Vector2(0.0f, 1.0f));
         //invGforceAngle = Vector2.SignedAngle(planarGforce, new Vector2(0.0f, 1.0f));
-
+        /*
         if (GearShiftPatternEnable && GetComponent<ACListener>().gear == 1 && speed > 0.1f)
         {
             // make all vibrate
@@ -174,9 +185,9 @@ public class PatternGenerator : MonoBehaviour
             }
             return;
         }
+        */
 
-
-        if (AccelPatternType == PatternType.cue_and_tactileMotion || RPMappingToMotion)
+        if (AccelPatternType == PatternType.cue_and_tactileMotion || RPMappingToMotion || startMotionEnable)
         {
             // duration range: 0.1~0.2s
             // ISOI range: 0.06~0.12s
@@ -359,6 +370,13 @@ public class PatternGenerator : MonoBehaviour
                         break;
                 }
             }
+            else
+            {
+                for (int i = 0; i < 16; i++)
+                {
+                    DirectionalCueIntensities[i] = 0;
+                }
+            }
         }
         else
         {
@@ -382,6 +400,8 @@ public class PatternGenerator : MonoBehaviour
                 DirectionalCueIntensities[i] = 0;
             }
         }
+
+        /*
         if (RPMappingToMotion && (currentRegion == VibrationRegionType.front || currentRegion == VibrationRegionType.back))
         {
             if (GetComponent<ACListener>().RPM > RPMThreshold && motionTimer < 0)
@@ -391,51 +411,162 @@ public class PatternGenerator : MonoBehaviour
                 StartCoroutine(generateMotion(false, 0.0f, 180.0f, 0.0f));
             }
         }
+        */
+
+        if (startMotionEnable)
+        {
+            if (GetComponent<ACListener>().gas > 0.5 && speed < lowSpeedThreshold && motionTimer < 0)
+            {
+                motionTimer = motionInterval;
+                StartCoroutine(generateMotion(true, 0.0f, -180.0f, 0.0f));
+                StartCoroutine(generateMotion(false, 0.0f, 180.0f, 0.0f));
+            }
+        }
 
         // Road shake pattern
-        if (RoadShakeEnable)
+        /*
+        if (RoadShakeVer0Enable)
         {
-            suspensionDiff = gameObject.GetComponent<ACListener>().suspensionDiff;
+            suspensionDiff = gameObject.GetComponent<ACListener>().unBufferedSuspensionDiff;
             for (int i = 0; i < 3; i++)
             {
-                // back right: 4 5 6 7 8
+                // front left: 12 13 14 15 0
                 if (suspensionDiff[0] > TyreSpeedMinThreshold)
                 {
-                    RoadShakeIntensities[backRightIndice[i]] = Mathf.FloorToInt(Mathf.Min(suspensionDiff[0], TyreSpeedMaxThreshold) * 100.0f / TyreSpeedMaxThreshold);
+                    RoadShakeIntensities[frontLeftIndice[i]] = Mathf.FloorToInt(Mathf.Min(suspensionDiff[0], TyreSpeedMaxThreshold) * maxRoadShakeIntensity / TyreSpeedMaxThreshold);
                 }
                 else
                 {
-                    RoadShakeIntensities[backRightIndice[i]] = 0;
-                }
-
-                // back left: 8 9 10 11 12
-                if (suspensionDiff[1] > TyreSpeedMinThreshold)
-                {
-                    RoadShakeIntensities[backLeftIndice[i]] = Mathf.FloorToInt(Mathf.Min(suspensionDiff[1], TyreSpeedMaxThreshold) * 100.0f / TyreSpeedMaxThreshold);
-                }
-                else
-                {
-                    RoadShakeIntensities[backLeftIndice[i]] = 0;
+                    RoadShakeIntensities[frontLeftIndice[i]] = 0;
                 }
 
                 // front right: 0 1 2 3 4
-                if (suspensionDiff[2] > TyreSpeedMinThreshold)
+                if (suspensionDiff[1] > TyreSpeedMinThreshold)
                 {
-                    RoadShakeIntensities[frontRightIndice[i]] = Mathf.FloorToInt(Mathf.Min(suspensionDiff[2], TyreSpeedMaxThreshold) * 100.0f / TyreSpeedMaxThreshold);
+                    RoadShakeIntensities[frontRightIndice[i]] = Mathf.FloorToInt(Mathf.Min(suspensionDiff[1], TyreSpeedMaxThreshold) * maxRoadShakeIntensity / TyreSpeedMaxThreshold);
                 }
                 else
                 {
                     RoadShakeIntensities[frontRightIndice[i]] = 0;
                 }
 
-                // front left: 12 13 14 15 0
+                // back left: 8 9 10 11 12
+                if (suspensionDiff[2] > TyreSpeedMinThreshold)
+                {
+                    RoadShakeIntensities[backLeftIndice[i]] = Mathf.FloorToInt(Mathf.Min(suspensionDiff[2], TyreSpeedMaxThreshold) * maxRoadShakeIntensity / TyreSpeedMaxThreshold);
+                }
+                else
+                {
+                    RoadShakeIntensities[backLeftIndice[i]] = 0;
+                }
+
+                // back right: 4 5 6 7 8
                 if (suspensionDiff[3] > TyreSpeedMinThreshold)
                 {
-                    RoadShakeIntensities[frontLeftIndice[i]] = Mathf.FloorToInt(Mathf.Min(suspensionDiff[3], TyreSpeedMaxThreshold) * 100.0f / TyreSpeedMaxThreshold);
+                    RoadShakeIntensities[backRightIndice[i]] = Mathf.FloorToInt(Mathf.Min(suspensionDiff[3], TyreSpeedMaxThreshold) * maxRoadShakeIntensity / TyreSpeedMaxThreshold);
+                }
+                else
+                {
+                    RoadShakeIntensities[backRightIndice[i]] = 0;
+                }
+            }
+        }
+        if (RoadShakeVer1Enable)
+        {
+            suspensionDiff = gameObject.GetComponent<ACListener>().suspensionDiff;
+            for (int i = 0; i < 4; i++)
+            {
+                suspensionDiff[i] = Mathf.Abs(suspensionDiff[i]);
+            }
+            for (int i = 0; i < 3; i++)
+            {
+                // front left: 12 13 14 15 0
+                if (suspensionDiff[0] > TyreSpeedMinThreshold)
+                {
+                    RoadShakeIntensities[frontLeftIndice[i]] = Mathf.FloorToInt(Mathf.Min(suspensionDiff[0], TyreSpeedMaxThreshold) * maxRoadShakeIntensity / TyreSpeedMaxThreshold);
                 }
                 else
                 {
                     RoadShakeIntensities[frontLeftIndice[i]] = 0;
+                }
+
+                // front right: 0 1 2 3 4
+                if (suspensionDiff[1] > TyreSpeedMinThreshold)
+                {
+                    RoadShakeIntensities[frontRightIndice[i]] = Mathf.FloorToInt(Mathf.Min(suspensionDiff[1], TyreSpeedMaxThreshold) * maxRoadShakeIntensity / TyreSpeedMaxThreshold);
+                }
+                else
+                {
+                    RoadShakeIntensities[frontRightIndice[i]] = 0;
+                }
+
+                // back left: 8 9 10 11 12
+                if (suspensionDiff[2] > TyreSpeedMinThreshold)
+                {
+                    RoadShakeIntensities[backLeftIndice[i]] = Mathf.FloorToInt(Mathf.Min(suspensionDiff[2], TyreSpeedMaxThreshold) * maxRoadShakeIntensity / TyreSpeedMaxThreshold);
+                }
+                else
+                {
+                    RoadShakeIntensities[backLeftIndice[i]] = 0;
+                }
+
+                // back right: 4 5 6 7 8
+                if (suspensionDiff[3] > TyreSpeedMinThreshold)
+                {
+                    RoadShakeIntensities[backRightIndice[i]] = Mathf.FloorToInt(Mathf.Min(suspensionDiff[3], TyreSpeedMaxThreshold) * maxRoadShakeIntensity / TyreSpeedMaxThreshold);
+                }
+                else
+                {
+                    RoadShakeIntensities[backRightIndice[i]] = 0;
+                }
+            }
+        }
+        */
+        if (RoadShakeVer2Enable)
+        {
+            suspensionDiff = gameObject.GetComponent<ACListener>().suspensionDiff;
+            //TyreSpeedMinThreshold = 0.005f + Mathf.Clamp(speed / 15.0f ,0.0f,15.0f) * 0.025f;
+            //TyreSpeedMaxThreshold = 0.05f + Mathf.Clamp(speed / 15.0f, 0.0f, 15.0f) * 0.25f;
+            for (int i = 0; i < 3; i++)
+            {
+                // front left: 12 13 14 15 0
+                if (suspensionDiff[0] > TyreSpeedMinThreshold)
+                {
+                    RoadShakeIntensities[frontLeftIndice[i]] = Mathf.FloorToInt(Mathf.Min(suspensionDiff[0], TyreSpeedMaxThreshold) * maxRoadShakeIntensity / TyreSpeedMaxThreshold);
+                }
+                else
+                {
+                    RoadShakeIntensities[frontLeftIndice[i]] = 0;
+                }
+
+                // front right: 0 1 2 3 4
+                if (suspensionDiff[1] > TyreSpeedMinThreshold)
+                {
+                    RoadShakeIntensities[frontRightIndice[i]] = Mathf.FloorToInt(Mathf.Min(suspensionDiff[1], TyreSpeedMaxThreshold) * maxRoadShakeIntensity / TyreSpeedMaxThreshold);
+                }
+                else
+                {
+                    RoadShakeIntensities[frontRightIndice[i]] = 0;
+                }
+
+                // back left: 8 9 10 11 12
+                if (suspensionDiff[2] > TyreSpeedMinThreshold)
+                {
+                    RoadShakeIntensities[backLeftIndice[i]] = Mathf.FloorToInt(Mathf.Min(suspensionDiff[2], TyreSpeedMaxThreshold) * maxRoadShakeIntensity / TyreSpeedMaxThreshold);
+                }
+                else
+                {
+                    RoadShakeIntensities[backLeftIndice[i]] = 0;
+                }
+
+                // back right: 4 5 6 7 8
+                if (suspensionDiff[3] > TyreSpeedMinThreshold)
+                {
+                    RoadShakeIntensities[backRightIndice[i]] = Mathf.FloorToInt(Mathf.Min(suspensionDiff[3], TyreSpeedMaxThreshold) * maxRoadShakeIntensity / TyreSpeedMaxThreshold);
+                }
+                else
+                {
+                    RoadShakeIntensities[backRightIndice[i]] = 0;
                 }
             }
         }

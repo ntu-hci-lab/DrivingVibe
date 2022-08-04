@@ -48,33 +48,64 @@ namespace AirDriVR
         public Vector2 Gforce;
         [HideInInspector]
         public float G_vertical;
-        [HideInInspector]
+        //[HideInInspector]
         public float gas;
-        [HideInInspector]
-        public float brake;
-        private float lastRPM;
-        [HideInInspector]
-        public float RPM;
-        [HideInInspector]
-        public bool IsRpmRising;
-        [HideInInspector]
-        public int gear;
+        //[HideInInspector]
+        //public float brake;
+        //private float lastRPM;
+        //[HideInInspector]
+        //public float RPM;
+        //[HideInInspector]
+        //public bool IsRpmRising;
+        //[HideInInspector]
+        //public int gear;
         private float myTimeStamp;
-        private int lastRecordTime = 0;
+        [HideInInspector]
+        public int lastRecordTime = 0;
+        //[HideInInspector]
+        //public float[] load = new float[4];
+        private float[][] suspensionBuffer;
+        private int[] lapTimeBuffer;
+        public int bufferSize = 8;
+        private int bufferIndex = 0;
         private float[] lastSuspension = new float[4];
-        private float[] newSuspension = new float[4];
-        [HideInInspector]
+        private float[] unBufferedLastSuspension = new float[4];
+        //[HideInInspector]
+        public float[] newSuspension = new float[4];
+        public float[] unBufferedNewSuspension = new float[4];
+        //[HideInInspector]
         public float[] suspensionDiff = new float[4];
-        [HideInInspector]
-        public float carSlope;
+        //[HideInInspector]
+        public float[] unBufferedSuspensionDiff = new float[4];
+        //[HideInInspector]
+        //public float carSlope;
+        //[HideInInspector]
+        //public float[] Dy = new float[4];
+        //[HideInInspector]
+        //public float[] lastDirty = new float[4];
+        //[HideInInspector]
+        //public float[] newDirty = new float[4];
+
+        //public bool[] isOutOfTrack = new bool[4];
 
         private void Start()
         {
-            for(int i = 0; i < 4; i++)
+            suspensionBuffer = new float[4][];
+            lapTimeBuffer = new int[bufferSize];
+            for (int i = 0; i < 4; i++)
             {
                 lastSuspension[i] = 0;
                 newSuspension[i] = 0;
+                unBufferedLastSuspension[i] = 0;
+                unBufferedNewSuspension[i] = 0;
                 suspensionDiff[i] = 0;
+                unBufferedSuspensionDiff[i] = 0;
+                suspensionBuffer[i] = new float[bufferSize];
+                for(int j = 0; j < bufferSize; j++)
+                {
+                    suspensionBuffer[i][j] = 0;
+                    lapTimeBuffer[j] = 0;
+                }
             }
             Connect();
         }
@@ -163,7 +194,7 @@ namespace AirDriVR
                 }
                 */
                 ProcessParameters();
-                yield return 0;
+                yield return new WaitForFixedUpdate();
                 // Debug.Log("In while loop! ");
             }
         }
@@ -207,6 +238,8 @@ namespace AirDriVR
             infoText.text = info.ToString();
             pos = info.carCoordinates; // new Vector3(info.carCoordinates[0], info.carCoordinates[1], info.carCoordinates[2]); 
             velocity = info.speed_Ms;
+            Gforce = new Vector2(info.accG_horizontal, info.accG_frontal);
+            /*
             if (info.accG_frontal > 0)
             {
                 Gforce = new Vector2(info.accG_horizontal, info.accG_frontal * accReduceFactor);
@@ -215,41 +248,50 @@ namespace AirDriVR
             {
                 Gforce = new Vector2(info.accG_horizontal, info.accG_frontal);
             }
+            */
             G_vertical = info.accG_vertical;
 
             gas = info.gas;
-            brake = info.brake;
-            RPM = info.engineRPM;
-            if (RPM - lastRPM > 0.1f)
-            {
-                IsRpmRising = true;
-            }
-            else if (RPM - lastRPM < -0.1f)
-            {
-                IsRpmRising = false;
-            }
-            lastRPM = RPM;
-            gear = info.gear;
 
             if (lastRecordTime < info.lapTime)
             {
-                if (info.suspensionHeight != null)
-                {
-                    newSuspension = info.suspensionHeight;
-                }
 
                 for (int i = 0; i < 4; i++)
                 {
-                    suspensionDiff[i] = Mathf.Abs(newSuspension[i] - lastSuspension[i]) / (info.lapTime - lastRecordTime) * 1000;
-                    lastSuspension[i] = newSuspension[i];
+                    unBufferedNewSuspension = info.suspensionHeight;
+                    suspensionBuffer[i][bufferIndex] = unBufferedNewSuspension[i];
+                    
+                    //newSuspension[i] = BufferAverage(suspensionBuffer[i], bufferSize);
                 }
+                lapTimeBuffer[bufferIndex] = info.lapTime;
+                
+                int nextBufferIndex = (bufferIndex + 1) % bufferSize;
+                for (int i = 0; i < 4; i++)
+                {
+                    unBufferedSuspensionDiff[i] = Mathf.Abs(unBufferedNewSuspension[i] - unBufferedLastSuspension[i]) / (info.lapTime - lastRecordTime) * 1000;
+                    //suspensionDiff[i] = Mathf.Abs(newSuspension[i] - lastSuspension[i]) / (info.lapTime - lastRecordTime) * 1000;
+                    suspensionDiff[i] = (suspensionBuffer[i][bufferIndex] - suspensionBuffer[i][nextBufferIndex]) / (lapTimeBuffer[bufferIndex] - lapTimeBuffer[nextBufferIndex]) * 1000;
+                    unBufferedLastSuspension[i] = unBufferedNewSuspension[i];
+                    //lastSuspension[i] = newSuspension[i];
+                }
+                bufferIndex = nextBufferIndex;
                 lastRecordTime = info.lapTime;
             }
             else
             {
                 lastRecordTime = info.lapTime;
             }
-            carSlope = info.carSlope;
+
+        }
+
+        private float BufferAverage(float[] array, int size)
+        {
+            float tmp = 0;
+            for(int i = 0; i < size; i++)
+            {
+                tmp += array[i];
+            }
+            return (tmp / size);
         }
     }
 }
