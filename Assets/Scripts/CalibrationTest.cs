@@ -63,7 +63,7 @@ public class CalibrationTest : MonoBehaviour
 
     private void Start()
     {
-        gamepad = Gamepad.all[0] as XInputController;
+        gamepad = Gamepad.current as XInputController;
         try
         {
             if (!Directory.Exists(RecordDir))

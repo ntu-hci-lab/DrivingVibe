@@ -18,6 +18,7 @@ public class VirtualHeadband : MonoBehaviour
 
     // From 0~100 intensity
     public int[] HeadbandIntensity = new int[16];
+    public int[] HeadbandIntensityAfterOffset = new int[16];
 
     // From 0~100 intensity
     public int[] DirectionalCueIntensities = new int[16];
@@ -31,8 +32,29 @@ public class VirtualHeadband : MonoBehaviour
     private ACListener listener;
     private PatternGenerator patternGenerator;
     private ControllerHaptic controllerHaptic;
+
+    private float HeadRotOffset;
+    public int MotorOffset;
+    private float FrontAngle;
+
+    private void FixedUpdate()
+    {
+        HeadRotOffset = FrontAngle - GetComponent<BackgroundVRListener>().HeadRotation.eulerAngles.y;
+        MotorOffset = (Mathf.RoundToInt(HeadRotOffset / 22.5f) + 16) % 16;
+        for(int i = 0; i < 16; i++)
+        {
+            HeadbandIntensityAfterOffset[(i + MotorOffset) % 16] = HeadbandIntensity[i];
+        }
+    }
+
     private void Start()
     {
+        for (int i = 0; i < 16; i++)
+        {
+            HeadbandIntensity[i] = 0;
+            HeadbandIntensityAfterOffset[i] = 0;
+        }
+        StartCoroutine(setInitialHeadRot());
         if (isPassive)
         {
             listener = GetComponent<ACListener>();
@@ -62,6 +84,15 @@ public class VirtualHeadband : MonoBehaviour
                 StartCoroutine(UpdateHeadbandFromPatternGenerator());
             }
         }
+    }
+
+    private IEnumerator setInitialHeadRot()
+    {
+        while(GetComponent<BackgroundVRListener>().HeadRotation.eulerAngles.y == 0)
+        {
+            yield return 0;
+        }
+        FrontAngle = GetComponent<BackgroundVRListener>().HeadRotation.eulerAngles.y;
     }
 
     private IEnumerator UpdateHeadbandFromFile()

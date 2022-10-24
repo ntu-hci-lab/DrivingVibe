@@ -13,17 +13,23 @@ After that it should be fine.
 
 # Difference of each file
 
+## DrivingVibe_NewWifi
+Newest version of the code, input via wifi.
+
 ## DRV2605_Control 
 First version of the device (messy board)
 
 ## DRV2605_Control_MultipleDRV2605
 Second version of the device, input via serial port 
 
-## DRV2605_Control_MultipleDRV2605
+## DRV2605_Control_MultipleDRV2605_wifi
 Second version of the device, input via wifi
 
 ## DRV2605_Control_String
 First version of the device (messy board), input with string
+
+## DRV2605_NewPCB
+Template code with the new PCB, input via serial port.
 
 ## The rest
 Just some junk

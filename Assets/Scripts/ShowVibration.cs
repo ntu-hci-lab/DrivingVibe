@@ -29,7 +29,7 @@ public class ShowVibration : MonoBehaviour
         VibratorAddiLifeSpans = gameObject.GetComponent<VirtualLayer>().VibratorAddiLifeSpans;
         */
         virtualHeadband = GetComponent<VirtualHeadband>();
-        HeadbandState = virtualHeadband.HeadbandIntensity;
+        HeadbandState = virtualHeadband.HeadbandIntensityAfterOffset;
         maxColor = Color.red;
         for (int i = 0; i < 16; i++)
         {

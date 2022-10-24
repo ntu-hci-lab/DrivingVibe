@@ -18,7 +18,7 @@ public class ParameterRecorder : MonoBehaviour
     private ACListener listener;
     private PatternGenerator patternGenerator;
     private VirtualHeadband virtualHeadband;
-    private ControllerTest controllerTest;
+    private ControllerHaptic controllerHaptic;
 
     // datas
     private float _timeStamp;
@@ -46,7 +46,7 @@ public class ParameterRecorder : MonoBehaviour
         listener = GetComponent<ACListener>();
         patternGenerator = GetComponent<PatternGenerator>();
         virtualHeadband = GetComponent<VirtualHeadband>();
-        controllerTest = GetComponent<ControllerTest>();
+        controllerHaptic = GetComponent<ControllerHaptic>();
         //suspensionDiff = listener.suspensionDiff;
     }
 
@@ -148,8 +148,8 @@ public class ParameterRecorder : MonoBehaviour
             _suspensionDiff[i] = listener.suspensionDiff[i];
             //_suspensionDiff[i] = listener.unBufferedSuspensionDiff[i];
         }
-        _leftMotor = controllerTest.left;
-        _rightMotor = controllerTest.right;
+        _leftMotor = controllerHaptic.left;
+        _rightMotor = controllerHaptic.right;
 
         for (int i = 0; i < 16; i++)
         {

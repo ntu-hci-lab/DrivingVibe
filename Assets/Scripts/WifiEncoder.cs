@@ -10,7 +10,7 @@ public class WifiEncoder : Encoder
     private WifiToArduino Arduino;
     private bool isMonitorOn = false;
     private byte[] WifiToArduinoBytes = new byte[16];
-    private Coroutine currentMonitor;
+    private Coroutine currentMonitor = null;
 
     protected override void Start()
     {
@@ -52,10 +52,10 @@ public class WifiEncoder : Encoder
         float sum = 0;
         for (int i = 0; i < 16; i++)
         {
-            if(virtualHeadband.HeadbandIntensity[i] > 0)
+            if(virtualHeadband.HeadbandIntensityAfterOffset[i] > 0)
             {
                 // start from 0~100%, multiplied by weighting and global multiplier
-                tmp = (virtualHeadband.HeadbandIntensity[i] / 100.0f) * (globalMultiplier / 100.0f) * (VibratorIntensityWeight[i] / 100.0f);
+                tmp = (virtualHeadband.HeadbandIntensityAfterOffset[i] / 100.0f) * (globalMultiplier / 100.0f) * (VibratorIntensityWeight[i] / 100.0f);
 
                 // sum for static version
                 sum += tmp;

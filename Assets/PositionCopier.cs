@@ -162,7 +162,7 @@ public class PositionCopier : MonoBehaviour
             }
             reader.Close();
         }
-        
+
         return;
     }
     private void parseLine(string line)
@@ -173,7 +173,7 @@ public class PositionCopier : MonoBehaviour
         private float _speed;
         private float _acc_frontal;
         private float _acc_horizontal;
-        private float _acc_vertical;
+        private float gas;
         private float[] _suspensionDiff = new float[4];
         private int _isTactileMotionOngoing;
         private int[] _directionalCueIntensity = new int[16];
@@ -205,7 +205,7 @@ public class PositionCopier : MonoBehaviour
             parameterHolder._speed = float.Parse(data[4]);
             parameterHolder._acc_frontal = float.Parse(data[5]);
             parameterHolder._acc_horizontal = float.Parse(data[6]);
-            parameterHolder._acc_vertical = float.Parse(data[7]);
+            parameterHolder._gas = float.Parse(data[7]);
             parameterHolder._suspensionDiff[0] = float.Parse(data[8]);
             parameterHolder._suspensionDiff[1] = float.Parse(data[9]);
             parameterHolder._suspensionDiff[2] = float.Parse(data[10]);

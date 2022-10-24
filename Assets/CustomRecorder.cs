@@ -14,7 +14,7 @@ public class CustomRecorder : MonoBehaviour
     private bool isRecording = false;
     public int recordCount = 0;
     private ACListener listener;
-    //private ControllerTest controllerHaptic;
+    private ControllerHaptic controllerHaptic;
 
     // datas
     private float _timeStamp;
@@ -35,7 +35,7 @@ public class CustomRecorder : MonoBehaviour
     void Start()
     {
         listener = GetComponent<ACListener>();
-        //controllerHaptic = GetComponent<ControllerTest>();
+        controllerHaptic = GetComponent<ControllerHaptic>();
     }
 
     // Update is called once per frame
@@ -63,13 +63,13 @@ public class CustomRecorder : MonoBehaviour
         Debug.Log("Start recording parameters!");
         string FileName;
         StreamWriter Writer;
-        string headerLine = "_timeStamp,_acc,_acc_frontal,_acc_horizontal,_susDiffLF,_susDiffRF,_susDiffLB,_susDiffRB"; ;
+        string headerLine = "_timeStamp,_acc,_acc_frontal,_acc_horizontal,_leftMotor,_rightMotor"; ;
         float timer;
         float timeStamp = 0;
 
         for (int i = 0; i < recordMinutes; i++)
         {
-            FileName = FilePath + "Suspension_Profile_minute" + i.ToString() + ".csv";
+            FileName = FilePath + "ControllerMotor_Profile_minute" + i.ToString() + ".csv";
             Writer = new StreamWriter(FileName);
 
             Writer.WriteLine(headerLine);
@@ -87,7 +87,7 @@ public class CustomRecorder : MonoBehaviour
         }
 
 
-        FileName = FilePath + "Suspension_Profile_minute" + recordMinutes.ToString() + ".csv";
+        FileName = FilePath + "ControllerMotor_Profile_minute" + recordMinutes.ToString() + ".csv";
         Writer = new StreamWriter(FileName);
         Writer.WriteLine(headerLine);
         while (timeStamp < recordLength)
@@ -125,14 +125,16 @@ public class CustomRecorder : MonoBehaviour
         _acc = listener.Gforce.magnitude;
         _acc_frontal = listener.Gforce.y;
         _acc_horizontal = listener.Gforce.x;
+        _leftMotor = controllerHaptic.left;
+        _rightMotor = controllerHaptic.right;
         //_acc_vertical = listener.G_vertical;
         //_gas = listener.gas;
         //_suspension = listener.newSuspension;
-        _laptime = listener.lastRecordTime;
-        _suspensionDatas[0] = listener.suspensionDiff[0];
-        _suspensionDatas[1] = listener.suspensionDiff[1];
-        _suspensionDatas[2] = listener.suspensionDiff[2];
-        _suspensionDatas[3] = listener.suspensionDiff[3];
+        //_laptime = listener.lastRecordTime;
+        //_suspensionDatas[0] = listener.suspensionDiff[0];
+        //_suspensionDatas[1] = listener.suspensionDiff[1];
+        //_suspensionDatas[2] = listener.suspensionDiff[2];
+        //_suspensionDatas[3] = listener.suspensionDiff[3];
     }
     private void WriteWithCSVFormat(StreamWriter Writer)
     {
@@ -155,7 +157,8 @@ public class CustomRecorder : MonoBehaviour
         */
         string line = _timeStamp.ToString() + ",";
         line = line + _acc.ToString() + "," + _acc_frontal.ToString() + "," + _acc_horizontal.ToString() + ",";
-        line = line + _suspensionDatas[0].ToString() + "," + _suspensionDatas[1].ToString() + "," + _suspensionDatas[2].ToString() + "," + _suspensionDatas[3].ToString();
+        line = line + _leftMotor.ToString() + "," + _rightMotor.ToString();
+        //line = line + _suspensionDatas[0].ToString() + "," + _suspensionDatas[1].ToString() + "," + _suspensionDatas[2].ToString() + "," + _suspensionDatas[3].ToString();
         //Debug.Log(line);
         Writer.WriteLine(line);
     }

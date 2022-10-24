@@ -403,13 +403,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb7c97c75ff6e004997ffab03a9a652a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  RecordDir: D:\vibrateRecords\profile_shake_ver0
+  RecordDir: D:\vibrateRecords\profile_task3
   fileCount: 1
   token: {fileID: 1610484112}
   resolutionInTime: 0.3
   SphereHolder: {fileID: 1226177113}
-  renderingLength: 50
-  tokenSize: 10
+  renderingLength: 577
+  tokenSize: 20
   coloringMethod: 0
   coloringUpperBound: 80
   coloringLowerBound: 0
@@ -695,7 +695,7 @@ MonoBehaviour:
   _speed: 0
   _acc_frontal: 0
   _acc_horizontal: 0
-  _acc_vertical: 0
+  _gas: 0
   _suspensionDiff:
   - 0
   - 0

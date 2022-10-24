@@ -165,9 +165,9 @@ public class PatternGenerator : MonoBehaviour
             return;
         }
         */
-        Gforce = new Vector3(planarGforce.x, 0, planarGforce.y);
-        Gforce = Quaternion.Inverse(GetComponent<BackgroundVRListener>().HeadRotation) * Gforce;
-        planarGforce = new Vector2(Gforce.x, Gforce.z);
+        //Gforce = new Vector3(planarGforce.x, 0, planarGforce.y);
+        //Gforce = Quaternion.Inverse(GetComponent<BackgroundVRListener>().HeadRotation) * Gforce;
+        //planarGforce = new Vector2(Gforce.x, Gforce.z);
 
         planarGforceMagnitude = planarGforce.magnitude;
         GforceAngle = Vector2.SignedAngle(planarGforce, new Vector2(0.0f, 1.0f));

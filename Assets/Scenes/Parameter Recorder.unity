@@ -778,6 +778,8 @@ GameObject:
   - component: {fileID: 949571539}
   - component: {fileID: 949571536}
   - component: {fileID: 949571540}
+  - component: {fileID: 949571544}
+  - component: {fileID: 949571545}
   m_Layer: 5
   m_Name: AClistener
   m_TagString: Untagged
@@ -877,12 +879,13 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 949571532}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 88bec44cb3e12484abb89caed2e11d91, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   FilePath: D:\vibrateRecords\
+  recordTimer: 0
   recordLength: 40
   recordMinutes: 0
   recordCount: 0
@@ -899,18 +902,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   GforcePatternEnable: 1
-  RoadShakeVer0Enable: 0
-  RoadShakeVer1Enable: 0
   RoadShakeVer2Enable: 1
   MotionPatternType: 3
   DecelPatternType: 1
   AccelPatternType: 1
   TurnPatternType: 1
+  currentRegion: 0
   accAngleRange: 45
   decAngleRange: 45
   GforceMinThreshold: 0.1
   GforceMaxThreshold: 1.3
-  currentRegion: 0
   duration: 0.15
   ISOI: 0.1
   minISOI: 0.05
@@ -927,7 +928,6 @@ MonoBehaviour:
   maxRoadShakeIntensity: 100
   TyreSpeedMinThreshold: 0.02
   TyreSpeedMaxThreshold: 0.4
-  MinIntensityForVer2: 20
   suspensionDiff:
   - 0
   - 0
@@ -994,9 +994,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0918b843c863bca45b3ae367242dbf58, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  UserID: J
-  isStaticCondition: 0
-  virtualHeadband: {fileID: 949571542}
+  UserID: 1
+  WhichTask: 4
+  WhichCondition: 2
+  encoder: {fileID: 0}
+  virtualHeadband: {fileID: 0}
 --- !u!114 &949571539
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1043,7 +1045,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 949571532}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cef1d6aa6e736e84e8c02c3a3b8daa67, type: 3}
   m_Name: 
@@ -1064,7 +1066,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55021a0686da0444d88b10a6b8d21173, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isSync: 0
+  isPassive: 0
+  profileFilePath: D:\vibrateRecords\
+  profileFileName: Profile_minute0.csv
+  isControllerHaptic: 0
+  _gas: 0
   HeadbandIntensity: 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+  HeadbandIntensityAfterOffset: 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
   DirectionalCueIntensities: 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
   TactileMotionIntensities: 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
   RoadShakeIntensities: 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
@@ -1085,6 +1094,7 @@ MonoBehaviour:
   - 0
   - 0
   - 0
+  MotorOffset: 0
 --- !u!114 &949571542
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1099,16 +1109,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   useWifi: 1
   calibrationFilePath: ./record\
-  fileName: paul.txt
-  isRandom: 0
+  calibrationFileName: 0.txt
+  profileFilePath: D:\vibrateRecords\
+  profileFileName: Profile_minute0.csv
+  isPassive: 0
   UserID: 999
   VibratorIntensityWeight: 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
   minValue: 8
   maxValue: 40
   globalMultiplier: 100
   FramesPerUpdate: 1
-  isStaticCondition: 0
-  isEightMotorStatic: 0
 --- !u!114 &949571543
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1123,6 +1133,33 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   arduinoPaused: 1
   showString: 0
+--- !u!114 &949571544
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 949571532}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1c76e9b392a02f4583b08b57bb7113f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  left: 0
+  right: 0
+  headband: 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+--- !u!114 &949571545
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 949571532}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cec5c15a4672b45419efcb3f296a6e27, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &956803901
 GameObject:
   m_ObjectHideFlags: 0

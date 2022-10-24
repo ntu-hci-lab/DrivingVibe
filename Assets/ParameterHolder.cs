@@ -9,11 +9,8 @@ public class ParameterHolder : MonoBehaviour
     public float _speed;
     public float _acc_frontal;
     public float _acc_horizontal;
-    public float _acc_vertical;
-    //public float _gas;
-    //public float _brake; //dead
-    //public float _engineRPM; //dead
-    //public int _gear; //dead
+    //public float _acc_vertical;
+    public float _gas;
     public float[] _suspensionDiff = new float[4];
     //public float[] _bufferedSuspensionDiff = new float[4];
     public int _isTactileMotionOngoing;
