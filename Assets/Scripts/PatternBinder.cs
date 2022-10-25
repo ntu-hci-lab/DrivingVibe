@@ -5,7 +5,7 @@ using UnityEngine;
 public class PatternBinder : MonoBehaviour
 {
     public string UserID = "0";
-    public ConditionNum WhichCondition = ConditionNum.B_ControllerHaptic;
+    public ConditionNum WhichCondition = ConditionNum.Inertia_based;
 
 
     public WifiEncoder encoder;
@@ -13,8 +13,8 @@ public class PatternBinder : MonoBehaviour
 
     public enum ConditionNum
     {
-        B_ControllerHaptic = 1,
-        C_DrivingVibe = 2,
+        Mirroring = 1,
+        Inertia_based = 2,
     }
     void Awake()
     {
@@ -23,11 +23,11 @@ public class PatternBinder : MonoBehaviour
 
         switch (WhichCondition)
         {
-            case ConditionNum.B_ControllerHaptic:
-                abstractHeadband.isControllerHaptic = true;
+            case ConditionNum.Mirroring:
+                abstractHeadband.isMirroring = true;
                 break;
-            case ConditionNum.C_DrivingVibe:
-                abstractHeadband.isControllerHaptic = false;
+            case ConditionNum.Inertia_based:
+                abstractHeadband.isMirroring = false;
                 break;
         }
     }

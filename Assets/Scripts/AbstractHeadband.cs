@@ -7,7 +7,7 @@ public class AbstractHeadband : MonoBehaviour
 {
     // Refactored version of virtual headband
 
-    public bool isControllerHaptic = false;
+    public bool isMirroring = false;
     // From 0~100 intensity
     public int[] HeadbandIntensity = new int[16];
     public int[] HeadbandIntensityAfterOffset = new int[16];
@@ -19,7 +19,7 @@ public class AbstractHeadband : MonoBehaviour
 
     private void Start()
     {
-        if (isControllerHaptic)
+        if (isMirroring)
         {
             Patterns.Add(GetComponent<Mirroring>());
         }
