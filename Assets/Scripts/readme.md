@@ -1,1 +1,22 @@
 # Script Overview
+
+- ACListener.cs
+  - Adapted from https://github.com/ntu-hci-lab/HeadBlaster. Listens to the event / data from commercial game Assetto Corsa through UDP.
+- ACPacketStruct.cs
+  - Adapted from https://github.com/ntu-hci-lab/HeadBlaster. Layouts the data received from Assetto Corsa as specified in official documentation: https://docs.google.com/document/d/1KfkZiIluXZ6mMhLWfDX1qAGbvhGRC3ZUzjVIt5FQpp4/pub
+- WifiToArduino.cs
+  - Provide methods to send binary data to the control board via wifi.
+- Encoder.cs
+  - Read Calibration data and store the weighting.
+- WifiEncoder.cs
+  - Convert percentage intensity into actual Arduino input format.
+- AbstractHeadband.cs
+  - Get all the intensities from the list of Pattern and sum up for final headband intensity.
+- Pattern.cs
+  - Parent class of pattern implementation.
+- DirectionalCue.cs, RoadShake.cs, ColdStart.cs
+  - Patterns used in the 3D Inertia-based design. Get the telemetry data from ACListener and compute the according headband intensity.
+- Mirroring.cs
+  - Pattern of the Mirroring design. Create a virtual controller connecting to the computer. It copies all the input of the physical controller and send the vibration to both headband and physical controller
+- FileReplay.cs
+  - Produce vibration from pre-recorded file.
