@@ -7,6 +7,9 @@ using AirDriVR;
 
 public class WifiEncoder : Encoder
 {
+    // This script handles Arduino input via wifi.
+    // Please make sure the data format is compatible with the Arduino code
+
     private WifiToArduino Arduino;
     private bool isMonitorOn = false;
     private byte[] WifiToArduinoBytes = new byte[16];

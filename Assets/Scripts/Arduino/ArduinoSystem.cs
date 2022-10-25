@@ -6,6 +6,9 @@ using System.Collections;
 
 public class ArduinoSystem : MonoBehaviour
 {
+    // This script handles Arduino input via serial port.
+    // Please make sure the data format is compatible with the Arduino code
+
     private byte[] setZero = new byte[3];
 
     public string serialName = "COM12";
