@@ -1,0 +1,3 @@
+[submodule "PCB_and_hardware_related"]
+	path = PCB_and_hardware_related
+	url = https://github.com/Solla/Variable-LRA-Frequencies-on-DRV2605
